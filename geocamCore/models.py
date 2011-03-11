@@ -304,6 +304,23 @@ class Feature(models.Model):
                               user.last_name.capitalize())
             return result
 
+    def getViewerUrl(self):
+        name = self.name or 'untitled' + self.viewerExtension
+        return ('%s%s/%s/%s/%s'
+                % (settings.SCRIPT_NAME,
+                   self.__class__._meta.app_label,
+                   self.__class__.__name__.lower(),
+                   self.id,
+                   name))
+
+    def getEditUrl(self):
+        return ('%s%s/%s/%s/%s/'
+                % (settings.SCRIPT_NAME,
+                   self.__class__._meta.app_label,
+                   'editWidget',
+                   self.__class__.__name__.lower(),
+                   self.id))
+
     def getProperties(self):
         tagsList = tagging.utils.parse_tag_input(self.tags)
         author = self.getCachedAuthor()
@@ -317,7 +334,9 @@ class Feature(models.Model):
                     tags=tagsList,
                     icon=self.getIconDict(),
                     localId=self.id,
-                    subtype=self.__class__.__name__
+                    subtype=self.__class__.__name__,
+                    viewerUrl=self.getViewerUrl(),
+                    editUrl=self.getEditUrl(),
                     )
 
     def cleanDict(self, d):
