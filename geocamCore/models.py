@@ -210,6 +210,9 @@ class Sensor(models.Model):
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
+    def __unicode__(self):
+        return self.name
+
 class Feature(models.Model):
     folder = models.ForeignKey(Folder, default=1)
     name = models.CharField(max_length=80, blank=True, default='')
