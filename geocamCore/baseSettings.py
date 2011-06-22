@@ -110,6 +110,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'geocamCore',
     'geocamUtil',
+    'geocamFolder',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
