@@ -32,6 +32,7 @@ from geocamUtil.gpx import TrackLog
 from geocamUtil.Xmp import Xmp
 from geocamUtil.TimeUtil import parseUploadTime
 from geocamUtil.FileUtil import mkdirP
+from geocamFolder.models import Folder
 
 from geocamCore import settings
 
@@ -94,41 +95,23 @@ WORKFLOW_STATUS_CHOICES = ((WF_NEEDS_EDITS, 'Needs edits'),
                            )
 DEFAULT_WORKFLOW_STATUS = WF_SUBMITTED_FOR_VALIDATION
 
+PHONE_NUMBER_TYPE_CHOICES = ((0, 'Unknown type'),
+                             (1, 'Mobile'),
+                             (2, 'Work'),
+                             (3, 'Home'),
+                             (4, 'Pager'),
+                             (5, 'Work Fax'),
+                             (6, 'Home Fax'),
+                             (7, 'Other'),
+                             )
+
+ADDRESS_TYPE_CHOICES = ((0, 'Unknown type'),
+                        (1, 'Work'),
+                        (2, 'Home'),
+                        )
+
 class EmptyTrackError(Exception):
     pass
-
-class Folder(models.Model):
-    """Every piece of data in Share belongs to a folder which records both the
-    operation the data is associated with and who should be able to access it."""
-    name = models.CharField(max_length=32)
-    operation = models.ForeignKey("Operation", blank=True, null=True,
-                                  related_name='activeOperation',
-                                  help_text='Operation that gathered the data in this folder, if applicable.  (Once a folder has an operation and contains data, it should not be switched to a new operation; create a new folder instead.)')
-    timeZone = models.CharField(max_length=32,
-                                choices=TIME_ZONE_CHOICES,
-                                default=DEFAULT_TIME_ZONE,
-                                help_text="Time zone used to display timestamps on data in this folder.")
-    isArchive = models.BooleanField(default=False,
-                                    help_text='If true, disable editing data in this folder.')
-    notes = models.TextField(blank=True)
-    uuid = UuidField()
-    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
-
-    def __unicode__(self):
-        if self.name:
-            name = self.name
-        else:
-            name = '[untitled]'
-        return '%s id=%d' % (name, self.id)
-
-class Permission(models.Model):
-    folder = models.ForeignKey(Folder, default=1)
-    accessType = models.PositiveIntegerField(choices=PERMISSION_CHOICES)
-
-class Unit(models.Model):
-    folder = models.ForeignKey(Folder, default=1)
-    name = models.CharField(max_length=80)
-    permissions = models.ManyToManyField(Permission)
 
 class AbstractOperation(models.Model):
     """Represents an area where a team is operating.  Could be a regular
@@ -149,7 +132,6 @@ class AbstractOperation(models.Model):
     maxLon = models.FloatField(blank=True, null=True, verbose_name='maximum longitude') # WGS84 degrees
     notes = models.TextField(blank=True)
     tags = TagField(blank=True)
-    contentType = models.ForeignKey(ContentType, editable=False, null=True)
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
     objects = AbstractModelManager(parentModel=None)
@@ -163,27 +145,87 @@ class AbstractOperation(models.Model):
 class Operation(AbstractOperation):
     objects = FinalModelManager(parentModel=AbstractOperation)
 
+class AbstractPhoneNumber(models.Model):
+    phoneNumber = models.CharField(max_length=40)
+    numberType = models.PositiveIntegerField(default=0,
+                                             choices=PHONE_NUMBER_TYPE_CHOICES,
+                                             verbose_name='type')
+    preferred = models.BooleanField(default=False,
+                                    help_text='Set if this is the preferred contact number.')
+    class Meta:
+        abstract = True
+
+class AbstractAddress(models.Model):
+    address = models.CharField(max_length=128)
+    addressType = models.PositiveIntegerField(default=0,
+                                              choices=ADDRESS_TYPE_CHOICES,
+                                              verbose_name='type')
+    preferred = models.BooleanField(default=False,
+                                    help_text='Set if this is the preferred address.')
+    class Meta:
+        abstract = True
+
 class Assignment(models.Model):
-    folder = models.ForeignKey(Folder)
-    unit = models.ForeignKey(Unit,
-                             help_text='The unit you are assigned to.')
-    title = models.CharField(max_length=64, blank=True, help_text="Your title within unit.  Example: 'Sit Unit Leader'")
+    operation = models.ForeignKey(Operation)
+    userProfile = models.ForeignKey('UserProfile')
+    organization = models.CharField(max_length=64, blank=True, help_text="The organization or unit you are assigned to for this operation.")
+    jobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title for this operation.")
     uuid = UuidField()
+    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+
+class AssignmentPhoneNumber(AbstractPhoneNumber):
+    assignment = models.ForeignKey(Assignment)
+
+class Feed(models.Model):
+    """
+    An external map data feed. This is a provisional model that is not
+    yet in use and will probably need some changes.
+    """
+    name = models.CharField(max_length=40,
+                            help_text="A descriptive name.")
+    type = models.CharField(max_length=40,
+                            help_text="The type of data feed, used to control how we structure queries and interpret the results. Example: 'kml'")
+    url = models.CharField(max_length=512,
+                           help_text="The URL for accessing data from the feed.")
+    folder = models.ForeignKey(Folder,
+                               help_text="Folder that contains this feed.")
+    uuid = UuidField()
+    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+
+class Context(models.Model):
+    """
+    A context is a collection of settings that it makes sense to share
+    between members of a group or people on an incident.
+    """
+    name = models.CharField(max_length=40,
+                            help_text="A descriptive name.")
+    uploadFolder = models.ForeignKey(Folder,
+                                     related_name='%(app_label)s_%(class)s_uploadingContextSet',
+                                     help_text="Folder to upload data to.")
+    timeZone = models.CharField(max_length=32,
+                                choices=TIME_ZONE_CHOICES,
+                                default=DEFAULT_TIME_ZONE,
+                                help_text="Time zone used to display timestamps and to interpret incoming timestamps that aren't labeled with a time zone.")
+    displayFeeds = models.ManyToManyField(Feed,
+                                          help_text="Map data feeds that should be displayed.")
+    displayFolders = models.ManyToManyField(Folder,
+                                            related_name='%(app_label)s_%(class)s_displayingContextSet',
+                                            help_text="Folders that should be displayed.")
+    uuid = UuidField()
+    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
 class UserProfile(models.Model):
-    """Adds some extended fields to the django built-in User type."""
+    """
+    Adds some extended fields to the django built-in User type.
+    """
     user = models.OneToOneField(User, help_text='Reference to corresponding User object of built-in Django authentication system.')
     displayName = models.CharField(max_length=40, blank=True,
                                    help_text="The 'uploaded by' name that will appear next to data you upload.  Defaults to 'F. Last', but if other members of your unit use your account you might want to show your unit name instead.")
     contactInfo = models.CharField(max_length=128, blank=True,
                                    help_text="Your contact info.  If at an incident, we suggest listing cell number and email address.")
-    # user's overall folder permissions are the union of userPermissions and
-    # the permissions granted to units the user is posted to.  if user has 'admin'
-    # privileges to any folder, they can also create new folders.
-    userPermissions = models.ManyToManyField(Permission)
-    assignments = models.ManyToManyField(Assignment)
-    homeOrganization = models.CharField(max_length=64, blank=True, help_text="The organization you normally work for.")
-    homeTitle = models.CharField(max_length=64, blank=True, help_text="Your normal job title.")
+    organization = models.CharField(max_length=64, blank=True, help_text="The home organization you usually work for.")
+    jobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title in your home organization.")
+    operations = models.ManyToManyField(Operation, through=Assignment)
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
@@ -192,6 +234,12 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return u'<User %s "%s %s">' % (self.user.username, self.user.first_name, self.user.last_name)
+
+class ProfilePhoneNumber(AbstractPhoneNumber):
+    profile = models.ForeignKey(UserProfile)
+
+class ProfileAddress(AbstractAddress):
+    profile = models.ForeignKey(UserProfile)
 
 class Sensor(models.Model):
     name = models.CharField(max_length=40, blank=True,
@@ -204,7 +252,7 @@ class Sensor(models.Model):
                                 help_text='Software running on the sensor, including any known firmware and version details. Example: "GeoCam Mobile 1.0.10, Android firmware 2.1-update1 build ESE81"')
     serialNumber = models.CharField(max_length=80, blank=True,
                                     verbose_name='serial number',
-                                    help_text='Information that uniquely identifies this particular sensor unit. Example: "serialNumber:HT851N002808 phoneNumber:4126573579" ')
+                                    help_text='Information that uniquely identifies this particular sensor unit. Example: "HT123N002999 (phoneNumber: 8888675309)" ')
     notes = models.TextField(blank=True)
     tags = TagField(blank=True)
     uuid = UuidField()
@@ -352,31 +400,6 @@ class Feature(models.Model):
 
     def getDirUrl(self):
         return '/'.join([settings.DATA_URL] + list(self.getDirSuffix()))
-
-class Change(models.Model):
-    """The concept workflow is like this: there are two roles involved,
-    the author (the person who collected the data and who knows it best)
-    and validators (who are responsible for signing off on it before it
-    is considered 'valid' by the rest of the team).  When the author
-    uploads new data, it is marked 'submitted for validation', so it
-    appears in the queue of things to be validated.  Any validator
-    examining the queue has three choices with each piece of data: she
-    can mark it 'valid' (publishing it to the team), 'needs edits'
-    (putting it on the author's queue to be fixed), or
-    'rejected' (indicating it's not worth fixing, and hiding it to avoid
-    confusion).  If the author fixes something on his queue to be fixed,
-    he can then submit it to be validated again.  if the author notices
-    a problem with the data after it is marked 'valid', he can change
-    its status back to 'needs author fixes', edit, and then resubmit.
-    Each status change in the workflow is recorded as a Change object."""
-    timestamp = models.DateTimeField()
-    featureUuid = models.CharField(max_length=48)
-    user = models.ForeignKey(User)
-    action = models.CharField(max_length=40, blank=True,
-                              help_text='Brief human-readable description like "upload" or "validation check"')
-    workflowStatus = models.PositiveIntegerField(choices=WORKFLOW_STATUS_CHOICES,
-                                                 default=DEFAULT_WORKFLOW_STATUS)
-    uuid = UuidField()
 
 class PointFeature(Feature):
     latitude = models.FloatField(blank=True, null=True) # WGS84 degrees
