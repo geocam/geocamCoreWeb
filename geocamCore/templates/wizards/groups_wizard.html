@@ -1,0 +1,286 @@
+{% extends "wizards/base_wizard.html" %}
+
+{% block managetitle %}Create a group{% endblock %}
+
+{% block wizard_steps %}
+    <ul id="wizard_steps">
+        <li>
+            <script type="text/javascript" charset="utf-8">
+                var invite_index = 0;
+            
+                //Not the best place for this to be, but it will do for now
+                function add_member_to_list() {
+                    $('#members_list').append('<div id=\"'+invite_index+'\" class=\"invite_widget\">'+$('#invitee_email').val()+' <a href=\"javascript:void(0);\" onclick=\"remove_member_from_list(\''+$('#invitee_email').val()+'\',\''+invite_index+ '\');\">X</a></div>');
+                    
+                    $('#members_list_text').val($('#members_list_text').val() + $('#invitee_email').val() + ',');
+                    
+                    $('#invitee_email').val('');   
+                    
+                    invite_index++;
+                }
+                
+                function remove_member_from_list(email, index) {
+                    $('#members_list_text').val($('#members_list_text').val().replace(email + ',', ''));
+                    $('#'+index).remove();
+                    
+                }
+
+                function create_summary() {
+                    $('#confirm_group_name').text($('#group_name').val());
+                    
+                    if($('#group_password1').val().length != 0) {
+                        $('#confirm_group_password').text($('#group_password1').val());
+                    }
+                    else {
+                        $('#confirm_group_password').text("(No password set)");
+                    }
+                    
+                    
+                    $('#confirm_group_members').text(($('#members_list_text').val().split(',').length-1));
+                    
+                    /*
+                    var public_folder = $('#public_folder').checked;
+                    var private_folder = $('#private_folder').checked;
+                    var folder_confirm_string = "No folders created";
+
+                    if(public_folder && private_folder) {
+                        folder_confirm_string = "1 Public & 1 Private folder";
+                    }
+                    else if(public_folder && !private_folder) {
+                        folder_confirm_string = "1 Public folder";
+                    }
+                    else if(!public_folder && private_folder) {
+                        folder_confirm_string = "1 Private folder";
+                    }
+                    
+
+                    var folder_confirm_string = "1 Public & 1 Private folder";
+                    $('#confirm_group_folders').text(folder_confirm_string);
+                    */
+                    
+                    $('#group_name_private_folder').text($('#group_name').val());
+                    $('#group_name_public_folder').text($('#group_name').val());
+                }
+                
+                function validate_submit(step_limit) {
+                    stepto = null;
+                    
+                    if(typeof(step_limit) == "undefined") {
+                        step_limit = step_count;
+                    }
+                    
+                    if(step_limit >= 1) {
+                        
+                        if($('#group_name').val().length == 0) {
+                            $('#group_name_error').text('You need to specify a unique name for your group');
+                            $("#group_name_error").show();
+                            stepto = 1;
+                        }
+                        else {
+                            $("#group_name_error").hide();
+                        }
+                    }
+                    
+                    if(step_limit >= 2) {
+                                                
+                        if($('#group_password1').val() != $('#group_password2').val()) {
+                            $('#group_password1_error').text('The passwords you entered did not match. Please try again');
+                            $("#group_password1_error").show();
+                            stepto = 2;
+                        }
+                        else {
+                            $('#group_password1_error').hide();
+                        }
+                    }
+                    
+                    if(step_limit >= 3) {
+                       // Skip validation on the first group memebership, just incase you want to create a group of one
+                    }
+                    
+                    if(step_limit >= 4) {
+                        // This is the confirmation step, no need to run validation on it
+                    }
+                    
+                    if(stepto != null) {
+                        step_to(stepto);
+                        return false;
+                    }
+                    
+                    return true;
+                }
+                
+                function submit_data() {
+                    alert("You're done! Hooray!");
+                }
+            
+                function check_group_name_avaliability() {
+                    var name = $('#group_name').val();
+                }
+            
+            </script>
+            <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td colspan="2">
+                        <b>Set group name</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div id="group_name_error" class="wizard_error"></div>
+                        <!--<span class="label">Name of group</span>-->
+                        <span class="label">Enter a unique group name</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="80%">
+                        <input type="text" name="group_name" value="" id="group_name">
+                    </td>
+                    <td>
+                        <button type="button"  id="group_name_check" onclick="check_group_name_avaliability();" class="check_button">Check</button>
+                    </td>
+                </tr>
+            </table>
+        </li>
+        <li>
+            <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td colspan="2">
+                        <b>Set password</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div id="group_password1_error" class="wizard_error"></div>
+                        <span class="label">Password</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="text" name="group_password1" value="" id="group_password1">
+                    </td>
+                </tr> 
+                <tr>
+                    <td colspan="2">
+                        <div id="group_password2_error" class="wizard_error"></div>
+                        <span class="label">Confirm Password</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="text" name="group_password2" value="" id="group_password2">
+                    </td>
+                </tr>
+            </table>
+        </li>
+        <li>
+            <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td colspan="2">
+                        <b>Add Members</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div id="group_invitee_email_error" class="wizard_error"></div>
+                        <span class="label">Invitee Email Address</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="80%">
+                        <input type="text" name="invitee_email" value="" id="invitee_email">
+                    </td>
+                    <td>
+                        <button type="button" onclick="add_member_to_list()" class="check_button">Add</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span class="label">Members List</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <textarea id="members_list_text" name="members_list" style="display:none;" rows="10"></textarea>
+                        <div id="members_list"></div>
+                    </td>
+                </tr>
+            </table>
+        </li>
+        <!--
+        <li>
+            <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+                        <span class="label">Folders for group</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div>
+                            </span> Private
+                        </div>
+                        <div style="padding-left:20px">
+                            Your private folder will be called...
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div>
+                           <span id="group_name_public_folder"></span> Public
+                        </div>    
+                        <div style="padding-left:20px">
+                            Your private folder will be called...
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </li>
+        -->
+        <li>
+            <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+                        <b>Confirmation</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="confirm_label">Name:</span> 
+                        <span id="confirm_group_name"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="confirm_label">Password:</span> 
+                        <span id="confirm_group_password"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="confirm_label">Number of members:</span> 
+                        <span id="confirm_group_members"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="confirm_label">Folders created for your group:</span> 
+                        <span id="confirm_group_folders"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span id="group_name_public_folder"></span> Public
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span id="group_name_private_folder"></span> Private
+                    </td>
+                </tr>
+            </table>
+        </li>
+    </ul>
+{% endblock %}
+
+            

@@ -1,0 +1,36 @@
+{% extends "base2.html" %}
+
+{% block popupmenu %}<!-- Zero out pop up menu -->{% endblock %}
+{% block menubar %}<!-- Zero out menu bar -->{% endblock %}
+
+{% block contents %}
+<h1 class="geocam_table_title">Create an account</h1>
+
+<form name="register" method="POST" action=".">
+    <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+        {% for field in user_form %}
+            {% if field.errors  %}
+                {% for error in field.errors  %}
+                    <tr>
+                        <td colspan="2" style="color:red;">{{ error|escape }}</td>
+                    </tr>
+                {%  endfor %}
+            {% endif %}
+            <tr>
+                <td>{{ field.label_tag }}:</td>
+            </tr>
+            <tr>
+                <td>{{ field }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="2">
+                <a class="big_awesome_button" href="javascript:void(0);" onclick="document.forms['register'].submit();">Create Account</a>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" value="Join" />
+    {% csrf_token %}
+</form>
+
+{% endblock %}

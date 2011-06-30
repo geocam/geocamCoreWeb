@@ -1,0 +1,36 @@
+{% extends "base2.html" %}
+
+{% block popupmenu %} <!-- Zero out popup menu -->{% endblock %}
+
+{% block css %}
+
+table#nav_table {
+    text-align:center;
+    height:100%;
+}
+
+table#nav_table td {
+    width:33%;
+}
+
+{% endblock %}
+
+{% block contents %}
+<table id="nav_table" class="geocam_table" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>Map</td>
+        <td>List</td>
+        <td>Gallery</td>
+    </tr>
+    <tr>
+        <td>Photo</td>
+        <td>Talk</td>
+        <td>Reports</td>
+    </tr>
+    <tr>
+        <td>Help</td>
+        <td>Search</td>
+        <td>Management</td>
+    </tr>
+</table>
+{% endblock %}

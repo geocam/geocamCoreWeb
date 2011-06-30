@@ -1,0 +1,161 @@
+{% extends "wizards/base_wizard.html" %}
+
+{% block managetitle %}Create a folder{% endblock %}
+
+{% block wizard_steps %}
+    <ul id="wizard_steps">
+        <li>
+            <script type="text/javascript" charset="utf-8">
+                function create_summary() {
+                    $('#confirm_folder_name').text($('#folder_name').val());
+                    
+                    var group_count = $('#group_count').val();
+                    for(var i = 0; i< group_count; i++) {
+                        var group_name = $('#group_id_'+i).val();
+                        var group_perms = $('#group_permission_'+i).val();
+                        
+                        if(group_perms != "none") {
+                           $('#summary_table').append('<tr><td>'+group_name+'</td><td>'+group_perms+'</td></tr>');
+                        }
+                    }
+                }
+                
+                function validate_submit(step_limit) {
+                    stepto = null;
+                    
+                    if(typeof(step_limit) == "undefined") {
+                        step_limit = step_count;
+                    }
+                     
+                    // This is to block off the different validation steps, to support 
+                    // validation when clicking next or back
+                    if(step_limit >= 1) {
+                        if($('#folder_name').val().length == 0) {
+                            $('#folder_name_error').text('You need to specify a unique name for your folder');
+                            $("#folder_name_error").show();
+                            stepto = 1;
+                        }
+                        else {
+                            $("#folder_name_error").hide();
+                        }
+                    }
+                    
+                    if(step_limit >= 2) {
+                        if($('#group_permission_0').val() != "admin") {
+                            $('#permissions_error').text('Your account must have admin privileges to this folder.');
+                            $('#permissions_error').show();
+                            stepto = 2;
+                        }
+                        else {
+                            $('#permissions_error').hide();
+                        }
+                    }
+                    
+                    if(stepto != null) {
+                        step_to(stepto);
+                        return false;
+                    }
+                    
+                    return true;
+                }
+                
+                function submit_data() {
+                    alert('Hooray!');
+                }
+                
+                function check_folder_name_avaliability() {
+                    var name = $('#folder_name').val();
+                }
+                
+            </script>
+            <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td colspan="2">
+                        <b>Set folder name</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div id="folder_name_error" class="wizard_error"></div>
+                        <span class="label">Name of folder</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="80%">
+                        <input type="text" name="folder_name" value="" id="folder_name">
+                    </td>
+                    <td>
+                        <button type="button" id="folder_name_check" onclick="check_folder_name_avaliability();">Check</button>
+                    </td>
+                </tr>
+            </table>
+        </li>
+        <li>
+            <input type="hidden" id="group_count" name="group_count" value="2" />
+            <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+                        <b>Permissions</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div id="permissions_error" class="wizard_error"></div>
+                        <span class="label">Who needs permission to this folder?</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="60%">
+                        You
+                    </td>
+                    <td>
+                        <input type="hidden" id="group_id_0" name="group_id_0" value="You" />
+                        <input type="hidden" id="group_type_0" name="group_type_0" value="user" />
+                        <select id="group_permission_0" name="group_permission_0" disabled="disabled">
+                            <option value="admin" selected="selected">Admin</option>
+                            <option value="readwrite">Read + Write</option>
+                            <option value="write">Write Only</option>
+                            <option value="read">Read Only</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        FEMA Taskforce 1
+                    </td>
+                    <td>
+                        <input type="hidden" id="group_id_1" name="group_id_1" value="FEMA Taskforce 1" />
+                        <input type="hidden" id="group_type_1" name="group_type_1" value="group" />
+                        <select id="group_permission_1" name="group_permission_1">
+                            <option value="admin">Admin</option>
+                            <option value="readwrite">Read + Write</option>
+                            <option value="write">Write Only</option>
+                            <option value="read">Read Only</option>
+                            <option value="none" selected="selected">None</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </li>
+        <li>
+            <table id="summary_table" width="100%" border="0" cellspacing="0" cellpadding="5">
+                <tr>
+                    <td colspan="2">
+                        <b>Confirmation</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span class="confirm_label">Name:</span> 
+                        <span id="confirm_folder_name"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <span class="confirm_label">These users will have access to this folder:</span>
+                    </td>
+                </tr>
+            </table>
+        </li>
+    </ul>
+{% endblock %}

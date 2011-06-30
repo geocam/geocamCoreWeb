@@ -1,0 +1,176 @@
+{% extends "base2.html" %}
+
+{% block css %}
+    div#wizard h2 {
+    
+    }
+
+    ul#wizard_steps {
+        list-style-type:none;
+        padding:0;
+        margin:0;
+    }
+
+    ul#wizard_steps li {
+        margin:0;
+        padding:0;
+        display:none
+    }
+
+    div#wizard_controls_next_wrapper, div#wizard_controls_done_wrapper {
+        float:right;
+    }
+
+    div#wizard_controls_done_wrapper {
+        display:none;
+    }
+
+    span.confirm_label {
+        font-weight:bold;
+    }
+
+    div#wizard_controls_inner {
+        padding:10px;
+    }
+
+    div#wizard_controls {
+        position:fixed; 
+        bottom:30px;
+        width:100%;
+    }
+
+    div.wizard_error {
+        color:red;
+        display:none;
+    }
+
+    .check_button {
+        width:100%;
+    }
+    
+    div.invite_widget {
+        float:left;
+        padding:6px;
+        color:white;
+        background:gray;
+        font-weight:bold;
+        border-radius:5px;
+        margin:0px 6px 6px 0px; 
+    }  
+{% endblock %}
+
+{% block jsInit %}
+    
+    var current_step = 1;
+    var step_count = 0;
+    
+    function hide_current_step() {
+        $('#wizard_steps li:nth-child('+current_step+')').hide();
+    }
+    
+    function show_current_step() {
+        $('#wizard_steps li:nth-child('+current_step+')').show();
+    }
+    
+    function prepare_last_step() {
+        
+        if(current_step == (step_count-1)) {
+            
+            if(typeof(create_summary) != "undefined") {
+                create_summary();
+            }
+            
+            $('#wizard_controls_done_wrapper').show();
+            $('#wizard_controls_next_wrapper').hide();
+        }
+        else {
+            $('#wizard_controls_done_wrapper').hide();
+            $('#wizard_controls_next_wrapper').show();
+        }
+    }
+    
+    function step_back() {
+        if((current_step - 1) > 0) {
+            hide_current_step();
+            current_step--;
+            show_current_step();
+        }
+        
+        prepare_last_step();
+    }
+    
+    function step_forward() {
+        if((current_step + 1) < step_count) {    
+            hide_current_step();
+            
+            var valid = true;
+            if(typeof(validate_submit) != "undefined") {
+                valid = validate_submit(current_step);
+            }
+            
+            if(valid) {
+                current_step++;
+                show_current_step();
+            }
+        }
+        
+        prepare_last_step();
+    }
+    
+    function step_to(step) {
+        hide_current_step();
+        current_step = step;
+        show_current_step();
+    }
+    
+    function step_to_complete() {
+        if(typeof(validate_submit) != "undefined" && typeof(submit_data) != "undefined") {
+            if(validate_submit()) {
+               submit_data();
+            }
+        }
+    }
+    
+    $(document).ready(function(){
+        // Make sure the wizard is present before going on all this crazy stuff
+        if($('#wizard').length > 0) {
+            
+            step_count = $('#wizard_steps').children().length + 1;
+            if(step_count > 0) {
+
+                // Display the first step
+                $('ul#wizard_steps li:nth-child('+current_step+')').show();
+                
+                // Setup listeners for the next and last options
+                $('#next').click(step_forward);
+                $('#back').click(step_back);
+                $('#done').click(step_to_complete);
+            }
+        }
+    });
+    
+{% endblock %}
+
+{% block contents %}
+    <h1 class="geocam_table_title">{% block managetitle %}{% endblock %}</h1>
+
+    <div id="wizard">
+        <form action="." method="post" accept-charset="utf-8">
+            {% block wizard_steps %}
+            {% endblock %}
+        </form>
+        <div id="wizard_controls">
+            <div id="wizard_controls_inner">
+                <div id="wizard_controls_done_wrapper">
+                    <a id="done" class="small_awesome_button" href="javascript:void(0);">Done</a>
+                </div>
+                <div id="wizard_controls_next_wrapper">
+                    <a id="next" class="small_awesome_button" href="javascript:void(0);">Next</a>
+                </div>
+                <div id="wizard_controls_back_wrapper">
+                    <a id="back" class="small_awesome_button" href="javascript:void(0);">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

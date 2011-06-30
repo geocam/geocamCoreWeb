@@ -1,31 +1,54 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 
 {% block siteSection %}Login{% endblock %}
 
-{% block globalNav %}
-{% endblock %}
-
-{% block subtitle %}
-  Login
+{% block css %}
+    
 {% endblock %}
 
 {% block contents %}
-<h1>Login - GeoCam Share</h1>
 
-{% if form.errors %}
-<p>Invalid username or password. Please try again.</p>
-{% endif %}
+<form name="login" method="POST" action=".">
+    <h1 class="geocam_table_title">Login</h1>
 
-<form method="post" action=".">
-<table>
-<tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
-<tr><td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td></tr>
-</table>
+    <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+        {% if form.errors %}
+        <tr>
+            <td>
+                <p class="geocam_error_red">Invalid username or password. Please try again.</p>
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>
+                Username
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="username" id="id_username" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Password
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="password" name="password" id="id_password" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <a href="javascript:void();" onclick="document.forms['login'].submit();" class="big_awesome_button">Login</a>
+            </td>
+        </tr>
+    </table>
 
-<br/>
-<input type="submit" value="login" />
-<input type="hidden" name="next" value="{{ next }}" />
-{% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}" />
+    <input type="hidden" value="Login" />
+    {% csrf_token %}
 </form>
 
 {% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base2.html" %}
+
+{% block popupmenu %} <!-- Zero out popup menu -->{% endblock %}
+{% block menubar %} <!-- Zero out menu items -->{% endblock %}
+
+{% block contents %}
+<h1 class="geocam_table_title">Welcome</h1>
+
+<table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>Already have a GeoCam account?</td>
+    </tr>
+    <tr>
+        <td>
+            <a href="/accounts/login/?next=/home/" class="big_awesome_button">Login</a>
+        </td>
+    </tr>
+    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td>Need a new GeoCam account?</td>
+    </tr>
+    <tr>
+        <td>
+            <a href="/accounts/register/" class="big_awesome_button">Create an account</a>
+        </td>
+    </tr>
+    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td>Want to test drive GeoCam?</td>
+    </tr>
+    <tr>
+        <td>
+            <a href="/home/" class="big_awesome_button">Login as guest</a>
+        </td>
+    </tr>
+</table>
+{% endblock %}
