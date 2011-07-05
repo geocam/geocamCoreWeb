@@ -21,7 +21,7 @@ class UserDataForm(ModelForm):
 class ProfileForm(ModelForm):
     class Meta:
         model = UserProfile
-        fields = ('contactInfo', 'homeOrganization', 'homeTitle')
+        fields = ('contactInfo', 'homeOrganization', 'homeJobTitle')
         
 class ExtendedUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs): 

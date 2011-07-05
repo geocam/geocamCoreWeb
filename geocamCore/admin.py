@@ -10,10 +10,7 @@ from geocamCore.models import *
 
 admin.site.register(Operation)
 admin.site.register(Assignment)
-admin.site.register(AssignmentPhoneNumber)
 admin.site.register(Feed)
 admin.site.register(Context)
 admin.site.register(UserProfile)
-admin.site.register(ProfilePhoneNumber)
-admin.site.register(ProfileAddress)
 admin.site.register(Sensor)
