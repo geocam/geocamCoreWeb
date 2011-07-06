@@ -1,7 +1,5 @@
 {% extends "base2.html" %}
 
-{% block popupmenu %} <!-- Zero out popup menu -->{% endblock %}
-
 {% block css %}
 
 table#nav_table {
@@ -16,21 +14,39 @@ table#nav_table td {
 {% endblock %}
 
 {% block contents %}
-<table id="nav_table" class="geocam_table" border="1" cellspacing="0" cellpadding="0">
+<table id="nav_table" class="geocam_table" border="0" cellspacing="0" cellpadding="0">
     <tr>
-        <td>Map</td>
-        <td>List</td>
-        <td>Gallery</td>
+        <td>
+            <a href="javascript:void(0);" onclick="go_to_view('/geocamAware/map/');">Map</a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" onclick="go_to_view('/geocamAware/list/');">List</a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" onclick="go_to_view('/geocamAware/gallery/');">Gallery</a>
+        </td>
     </tr>
     <tr>
-        <td>Photo</td>
-        <td>Talk</td>
-        <td>Reports</td>
+        <td>
+            <a href="javascript:void(0);" onclick="go_to_view('/geocamLens/upload/');">Photo</a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" onclick="alert('We\'re sorry but the Talk application is not avaliable yet. Please try again another time.')">Reports</a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" onclick="alert('We\'re sorry but the Reports application is not avaliable yet. Please try again another time.')">Reports</a>
+        </td>
     </tr>
     <tr>
-        <td>Help</td>
-        <td>Search</td>
-        <td>Management</td>
+        <td>
+            <a href="javascript:void(0);" onclick="go_to_view('/help/');">Help</a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" onclick="go_to_view('/search/');">Search</a>
+        </td>
+        <td>
+            <a href="javascript:void(0);" onclick="go_to_view('/accounts/manage/');">Management</a>
+        </td>
     </tr>
 </table>
 {% endblock %}

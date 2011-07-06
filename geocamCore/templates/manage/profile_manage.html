@@ -1,0 +1,41 @@
+{% extends "manage/base_manage.html" %}
+
+{% block managetitle %}Manage Profile{% endblock %}
+
+{% block managemenu %}
+    <form name="profile" method="POST" action=".">
+        
+        <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+            {% for field in user_form %}
+                <tr>
+                    <td>{{ field.label_tag }}</td>
+                </tr>
+                <tr>
+                    <td>{{ field }}</td>
+                </tr>
+
+                {% if field.errors  %}
+                    {% for error in field.errors  %}
+                        <tr>
+                            <td colspan="2" class="geocam_error_red">{{ error|escape }}</td>
+                        </tr>
+                    {%  endfor %}
+                {% endif %}
+
+            {% endfor %}
+
+            <tr>
+                <td colspan="2">
+                    <a href="javascript:void();" onclick="document.forms['profile'].submit();" class="big_awesome_button">Save</a>
+                </td>
+            </tr>
+
+        </table>
+
+        <input type="hidden" value="Save" />
+        {% csrf_token %}
+
+
+
+    </form>
+{% endblock %}

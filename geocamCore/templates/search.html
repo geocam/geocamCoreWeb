@@ -1,0 +1,28 @@
+{% extends "base2.html" %}
+
+{% block contents %}
+
+<form name="search" method="POST" action=".">
+    <h1 class="geocam_table_title">Search</h1>
+
+    <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+                Enter the tags you which to search by bellow
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="search" id="id_search" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <a href="javascript:void();" onclick="document.forms['login'].submit();" class="big_awesome_button">Search</a>
+            </td>
+        </tr>
+    </table>
+    {% csrf_token %}
+</form>
+
+{% endblock %}

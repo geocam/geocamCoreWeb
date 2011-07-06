@@ -13,30 +13,30 @@ urlpatterns = patterns(
     '',
 
     (r'^$', views.index, {'loginRequired':False}),
-    (r'^home/$', views.home, {'loginRequired':False}),
+    (r'^home/', views.home, {'loginRequired':False}),
+    (r'^search/', views.search, {'loginRequired':True}),
 
     # accounts
-    (r'^accounts/login/$', 'django.contrib.auth.views.login', 
+    (r'^accounts/login/', 'django.contrib.auth.views.login', 
         # avoid redirect loop
         {'loginRequired': False }
     ),
     
-    (r'^accounts/logout/$', 'django.contrib.auth.views.logout',
+    (r'^accounts/logout/', 'django.contrib.auth.views.logout',
         # show logout page instead of redirecting to log in again
         {'loginRequired': False}
     ),
+     
+    (r'^accounts/register/', views.register, {'loginRequired':False}),
     
+    (r'^accounts/manage/', views.manage, {'loginRequired':True}),
+    (r'^accounts/manage/profile/', views.profile, {'loginRequired':True}),
     
-    (r'^accounts/manage/$', views.manage, {'loginRequired':True}),
-    (r'^accounts/profile/$', views.profile, {'loginRequired':True}),
-    (r'^accounts/register/$', views.register, {'loginRequired':False}),
+    (r'^accounts/manage/groups/', views.groups_manage, {'loginRequired':True}),
+    (r'^accounts/manage/groups/wizard/', views.groups_wizard, {'loginRequired':True}),
     
-    
-    (r'^accounts/manage/groups/$', views.groups_manage, {'loginRequired':True}),
-    (r'^accounts/manage/groups/wizard/$', views.groups_wizard, {'loginRequired':True}),
-    
-    (r'^accounts/manage/folders/$', views.folders_manage, {'loginRequired':True}),
-    (r'^accounts/manage/folders/wizard/$', views.folders_wizard, {'loginRequired':True}),
+    (r'^accounts/manage/folders/', views.folders_manage, {'loginRequired':True}),
+    (r'^accounts/manage/folders/wizard/', views.folders_wizard, {'loginRequired':True}),
 )
 
 if settings.USE_STATIC_SERVE:

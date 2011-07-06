@@ -19,7 +19,7 @@ from geocamUtil import anyjson as json
 from geocamCore.forms import ExtendedUserCreationForm,UserDataForm, ProfileForm
 
 # Add tool for getting account widget
-from geocamUtil.auth import getAccountWidget
+from geocamUtil.auth import get_account_widget
 from geocamAware import settings
 
 selectedApp = "none"
@@ -37,7 +37,7 @@ def register(request):
             # profile_form = ProfileForm(request.POST, instance=user.get_profile())
             # profile_form.save()
             
-            return HttpResponseRedirect('/accounts/login')
+            return HttpResponseRedirect('/accounts/login/?next=/home/')
         
     else:
         # profile_form = ProfileForm()
@@ -45,7 +45,7 @@ def register(request):
         
     # return render_to_response('registration/register.html',  { 'profile_form':profile_form, 'user_form':user_form })
     return render_to_response('registration/register.html',  
-                                {   'accountWidget':getAccountWidget(request), 
+                                {   'account_widget':get_account_widget(request), 
                                     'user_form':user_form, 
                                     'selectedApp':selectedApp 
                                 },
@@ -54,19 +54,18 @@ def register(request):
 
 
 def index(request):
-    return render_to_response('landing/index.html', 
-                                {   'accountWidget':getAccountWidget(request),  
-                                    'selectedApp':selectedApp,
-                                     
-                                },
-                                context_instance=RequestContext(request))
+    if not request.user.is_authenticated():
+        return render_to_response('landing/index.html', 
+                                    { 'account_widget':get_account_widget(request) },
+                                    context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect('/home/')
                                 
 def home(request):
     return render_to_response('landing/home.html', 
-                                {   'accountWidget':getAccountWidget(request),  
-                                    'selectedApp':selectedApp 
-                                },
+                                { 'account_widget':get_account_widget(request) },
                                 context_instance=RequestContext(request))
+
 
 @login_required
 def profile(request):
@@ -95,55 +94,50 @@ def profile(request):
         
         user_form = UserDataForm(instance=u)
        
-    return render_to_response('profile.html', 
-                                {   'accountWidget':getAccountWidget(request),  
+    return render_to_response('manage/profile_manage.html', 
+                                {   'account_widget':get_account_widget(request),  
                                     'profile_form':profile_form, 
                                     'user_form':user_form, 
-                                    'selectedApp':selectedApp 
                                 },
                                 context_instance=RequestContext(request))
 
 
 @login_required
+def search(request):
+    return render_to_response('search.html',
+                                { 'account_widget':get_account_widget(request) },
+                                context_instance=RequestContext(request))    
+
+@login_required
 def manage(request):
     return render_to_response('manage/index_manage.html',
-                                {   'accountWidget':getAccountWidget(request), 
-                                    'selectedApp':selectedApp
-                                },
+                                { 'account_widget':get_account_widget(request) },
                                 context_instance=RequestContext(request))
 
 
 @login_required
 def groups_manage(request):
     return render_to_response('manage/groups_manage.html',
-                                {   'accountWidget':getAccountWidget(request), 
-                                    'selectedApp':selectedApp
-                                },
+                                { 'account_widget':get_account_widget(request) },
                                 context_instance=RequestContext(request))
 
 
 @login_required
 def groups_wizard(request):
     return render_to_response('wizards/groups_wizard.html',
-                                {   'accountWidget':getAccountWidget(request), 
-                                    'selectedApp':selectedApp
-                                },
+                                { 'account_widget':get_account_widget(request) },
                                 context_instance=RequestContext(request))
 
 
 @login_required
 def folders_manage(request):
     return render_to_response('manage/folders_manage.html',
-                                {   'accountWidget':getAccountWidget(request), 
-                                    'selectedApp':selectedApp
-                                },
+                                { 'account_widget':get_account_widget(request) },
                                 context_instance=RequestContext(request))
 
 
 @login_required
 def folders_wizard(request):
     return render_to_response('wizards/folders_wizard.html',
-                                {   'accountWidget':getAccountWidget(request), 
-                                    'selectedApp':selectedApp
-                                },
+                                { 'account_widget':get_account_widget(request) },
                                 context_instance=RequestContext(request))

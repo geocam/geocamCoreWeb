@@ -4,7 +4,12 @@
         <title>{% block title %}{% block siteSection %}Main{% endblock %} - {% block siteTitle %}GeoCam Share{% endblock %}{% endblock %}</title>
         
         <!-- Dude this is so... -->
+        <meta name="apple-touch-fullscreen" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="viewport" content="user-scalable=no, width=device-width" />
+        
+        <!-- For launching from home screen -->
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> -->
         
         <!-- Javascript Includes -->
         <script src="/media/external/js/jquery.min.js" type="text/javascript"></script>
@@ -35,7 +40,7 @@
                 position: relative;
                 cursor: pointer;
             }
-
+            
             a.small_awesome_button:hover, a.big_awesome_button:hover, a.awesome:hover { 
                 background-color:#111;
                 color: #fff;
@@ -158,7 +163,40 @@
                 margin:0;
                 height:100%;
             }
-        
+            
+            input[type="text"], input[type="password"] {
+                font-size:18px;
+            }
+            
+            body.nighttime input {
+                border:none;
+                border:1px solid red;
+                background:black;
+                color:red;
+            }
+            
+            a, a:visited {
+                text-decoration:none;
+            }
+            
+            body.daytime a, body.daytime a:visited {
+                color:blue;
+            }
+            
+            body.nighttime a, body.nighttime a:visited {
+                color:red;
+            }
+            
+            /* This is so things look right in safari */
+            body.daytime a.small_awesome_button, body.daytime a.small_awesome_button:visited, body.daytime a.big_awesome_button, body.daytime a.big_awesome_button:visited, body.daytime a.awesome, body.daytime a.awesome:visited {
+                color:white;
+            }
+            
+            body.nighttime a.small_awesome_button, body.nighttime a.small_awesome_button:visited, body.nighttime a.big_awesome_button, body.nighttime a.big_awesome_button:visited, body.nighttime a.awesome, body.nighttime a.awesome:visited {
+                text-shadow:none;
+                color:black;
+            }
+            
             .geocam_green {
                 background:#639A4A;
             }
@@ -184,15 +222,24 @@
             
             div#geocam_logo a, div#geocam_logo a:visited {
                 text-decoration:none;
+            }
+            
+            body.daytime div#geocam_logo a, body.daytime div#geocam_logo a:visited {
                 color:white;
             }
             
+            body.nighttime div#geocam_logo a, body.nighttime div#geocam_logo a:visited {
+                color:black;
+            }
+            
             div#menu_bar_wrapper {
+                line-height:48px;
                 font-size:18px;
+                height:48px;
             }
             
             div#menu_bar {
-                padding:3px;
+                padding:0px 3px;
             }
             
             body.daytime div#menu_bar_wrapper {
@@ -207,7 +254,6 @@
             
             ul#menu_bar_items {
                 margin:0;
-                width:40%;
                 padding:0;
                 float:right;
                 list-style-type:none;
@@ -215,8 +261,9 @@
             
             ul#menu_bar_items li {    
                 margin:0;
-                width:30%;
+                width:40px;
                 float:left;
+                padding:0px 10px;
                 text-align:center;
             }
             
@@ -238,16 +285,44 @@
                 text-decoration:none;
             }
             
+            body.daytime ul#menu_bar_items li.home {
+                background:url('/media/geocamCore/img/Home_white.png') no-repeat 50% 50%;
+            }
+            
+            body.nighttime ul#menu_bar_items li.home {
+                background:url('/media/geocamCore/img/Home_gr.png') no-repeat 50% 50%;
+            }
+            
+            body.daytime ul#menu_bar_items li.nightday {
+                background:url('/media/geocamCore/img/Mode_sun_white.png') no-repeat 50% 50%;
+            }
+            
+            body.nighttime ul#menu_bar_items li.nightday {
+                background:url('/media/geocamCore/img/Mode_moon_gr.png') no-repeat 50% 50%;
+            }
+            
+            body.daytime ul#menu_bar_items li.search {
+                background:url('/media/geocamCore/img/Mag_white.png') no-repeat 50% 50%;
+            }
+            
+            body.nighttime ul#menu_bar_items li.search {
+                background:url('/media/geocamCore/img/Mag_gr.png') no-repeat 50% 50%;
+            }
+            
+            ul#menu_bar_items li {
+                cursor:pointer;
+            }
+            
             div#wrapper {
                 height:100%;
             }
             
             div#content_wrapper {
-                height:92%;
+                height:100%;
             }
                 
             div#content {
-                margin:5px;
+                padding:5px;
                 height:100%;
             }
             
@@ -269,19 +344,47 @@
                 margin:0px 10px 0px 10px;
             }
             
-            div#pop_up_menu_control {
+            body.daytime div#pop_up_menu a, body.daytime div#pop_up_menu a:visited {
                 color:white;
+            }
+            
+            body.nighttime div#pop_up_menu a, body.nighttime div#pop_up_menu a:visited {
+                color:red;
+            }
+            
+             div#pop_up_menu_control {
                 padding:5px;
-                background:#999;
                 text-align:center;
                 border-top-left-radius:7px;
                 border-top-right-radius:7px;
             }
             
+            body.daytime div#pop_up_menu_control {
+                color:white;
+                background:#999;
+            }
+            
+            body.nighttime div#pop_up_menu_control {
+                background:red;
+            }
+            
+            body.nighttime div#pop_up_menu_control a {
+                color:black;
+            }
+            
             div#pop_up_menu_list {
                 display:none;
                 font-weight:bold;
+            }
+            
+            body.daytime div#pop_up_menu_list {
                 background:#2E2D2D;
+            }
+            
+            body.nighttime div#pop_up_menu_list {
+                background:black;
+                border-left:1px solid red;
+                border-right:1px solid red;
             }
             
             div#pop_up_menu_list div {
@@ -351,8 +454,24 @@
             input.big_input {
                 width:100%;
             }
-        
+            
+            body.daytime span#direction {
+                color:white;
+            }
+            
+            
+            
             {% block css %}
+            {% endblock %}
+        </style>
+        
+        <!-- This is CSS only for mobile devices -->
+        <style type="text/css" media="only screen and (max-device-width: 480px)">
+            table.geocam_table input {
+                width:94%;
+            }
+            
+            {% block mobilestyles %}
             {% endblock %}
         </style>
         
@@ -360,9 +479,14 @@
         <script type="text/javascript" charset="utf-8">
             {% block jsSetVars %}
             {% endblock %}
-
+            
+            
             {% block jsInit %}
             {% endblock %}
+            
+            function go_to_view(url) {
+                window.location.href = url;
+            }
             
             function toggleMenu() {
                 $('#pop_up_menu_list').slideToggle('slow');
@@ -397,7 +521,7 @@
             }       
         </script>
     </head>
-    <body class="{{request.COOKIES.mode|safe}}">
+    <body class="{% if request.COOKIES.mode %}{{request.COOKIES.mode|safe}}{% else %}daytime{% endif %}">
         <div id="wrapper">
             
             <!-- Menu Bar -->
@@ -405,17 +529,13 @@
                 <div id="menu_bar">
                     {% block menubar %}
                     <ul id="menu_bar_items">
-                        <li>
-                            <a href="/home/">H</a>
-                        </li>
-                        <li>
-                            <a href="#" onclick="toggleNightMode();">S</a>
-                        </li>
-                        <li>M</li>
+                        <li class="home" onclick="go_to_view('/home/');">&nbsp;</li>
+                        <li class="nightday" onclick="toggleNightMode();">&nbsp;</li>
+                        <li class="search" onclick="go_to_view('/search/');">&nbsp;</li>
                     </ul>
                     {% endblock %}
                     <div id="geocam_logo">
-                        <a href="/">GeoCam</a>
+                        <a href="javascript:void(0);" onclick="go_to_view('/');">GeoCam</a>
                     </div>
                 </div>
             </div>
@@ -433,14 +553,20 @@
             {% block popupmenu %}
             <div id="pop_up_menu_wrapper">
                 <div id="pop_up_menu">
+                    {% if pop_up_menu_items or account_widget %}
+                    
                     <div id="pop_up_menu_control">
                         <a href="javascript:void();" onclick="toggleMenu();"><span id="direction">Menu</span></a>
                     </div>
                     <div id="pop_up_menu_list">
-                        <div>Login</div>
-                        <div>Account</div>
-                        {% block pop_up_menu_items %}{% endblock %}
+                        {% if account_widget %}
+                            {{ account_widget|safe }}
+                        {% endif %}
+                        {% if pop_up_menu_items %}
+                            {{ pop_up_menu_items|safe }}
+                        {% endif %}
                     </div>
+                    {% endif %}
                 </div>
             </div>
             {% endblock %}
