@@ -17,10 +17,11 @@ import PIL.Image
 from django.db import models
 from django.utils.safestring import mark_safe
 from tagging.fields import TagField
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.contrib.contenttypes import generic
+from django.db.models.signals import post_save
 import tagging
 
 from geocamUtil import anyjson as json
@@ -95,21 +96,6 @@ WORKFLOW_STATUS_CHOICES = ((WF_NEEDS_EDITS, 'Needs edits'),
                            )
 DEFAULT_WORKFLOW_STATUS = WF_SUBMITTED_FOR_VALIDATION
 
-PHONE_NUMBER_TYPE_CHOICES = ((0, 'Unknown type'),
-                             (1, 'Mobile'),
-                             (2, 'Work'),
-                             (3, 'Home'),
-                             (4, 'Pager'),
-                             (5, 'Work Fax'),
-                             (6, 'Home Fax'),
-                             (7, 'Other'),
-                             )
-
-ADDRESS_TYPE_CHOICES = ((0, 'Unknown type'),
-                        (1, 'Work'),
-                        (2, 'Home'),
-                        )
-
 class EmptyTrackError(Exception):
     pass
 
@@ -119,7 +105,7 @@ class AbstractOperation(models.Model):
     For a discussion of incident file naming conventions see
     http://gis.nwcg.gov/2008_GISS_Resource/student_workbook/unit_lessons/Unit_08_File_Naming_Review.pdf"""
 
-    folder = models.ForeignKey(Folder, related_name='%(app_label)s_%(class)s_owningFolder', default=1)
+    folders = models.ManyToManyField(Folder, related_name='%(app_label)s_%(class)s_folders', default=[1])
     name = models.CharField(max_length=32, blank=True,
                             help_text="A descriptive name for this operation.  Example: 'beaver_pond'.")
     operationId = models.CharField(max_length=32, blank=True, verbose_name='operation id',
@@ -145,36 +131,14 @@ class AbstractOperation(models.Model):
 class Operation(AbstractOperation):
     objects = FinalModelManager(parentModel=AbstractOperation)
 
-class AbstractPhoneNumber(models.Model):
-    phoneNumber = models.CharField(max_length=40)
-    numberType = models.PositiveIntegerField(default=0,
-                                             choices=PHONE_NUMBER_TYPE_CHOICES,
-                                             verbose_name='type')
-    preferred = models.BooleanField(default=False,
-                                    help_text='Set if this is the preferred contact number.')
-    class Meta:
-        abstract = True
-
-class AbstractAddress(models.Model):
-    address = models.CharField(max_length=128)
-    addressType = models.PositiveIntegerField(default=0,
-                                              choices=ADDRESS_TYPE_CHOICES,
-                                              verbose_name='type')
-    preferred = models.BooleanField(default=False,
-                                    help_text='Set if this is the preferred address.')
-    class Meta:
-        abstract = True
-
 class Assignment(models.Model):
     operation = models.ForeignKey(Operation)
     userProfile = models.ForeignKey('UserProfile')
     organization = models.CharField(max_length=64, blank=True, help_text="The organization or unit you are assigned to for this operation.")
     jobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title for this operation.")
+    contactInfo = models.CharField(max_length=128, blank=True, help_text="Your contact info for this operation. Cell phone number is most important.")
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
-
-class AssignmentPhoneNumber(AbstractPhoneNumber):
-    assignment = models.ForeignKey(Assignment)
 
 class Feed(models.Model):
     """
@@ -187,8 +151,8 @@ class Feed(models.Model):
                             help_text="The type of data feed, used to control how we structure queries and interpret the results. Example: 'kml'")
     url = models.CharField(max_length=512,
                            help_text="The URL for accessing data from the feed.")
-    folder = models.ForeignKey(Folder,
-                               help_text="Folder that contains this feed.")
+    folders = models.ManyToManyField(Folder,
+                                     help_text="Folders that contain this feed.")
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
@@ -214,6 +178,13 @@ class Context(models.Model):
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
+class GroupProfile(models.Model):
+    group = models.OneToOneField(Group, help_text='Reference to corresponding Group object of built-in Django authentication system.')
+    context = models.ForeignKey(Context, blank=True, null=True,
+                                help_text='Default context associated with this group.')
+    uuid = UuidField()
+    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+
 class UserProfile(models.Model):
     """
     Adds some extended fields to the django built-in User type.
@@ -221,10 +192,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, help_text='Reference to corresponding User object of built-in Django authentication system.')
     displayName = models.CharField(max_length=40, blank=True,
                                    help_text="The 'uploaded by' name that will appear next to data you upload.  Defaults to 'F. Last', but if other members of your unit use your account you might want to show your unit name instead.")
-    contactInfo = models.CharField(max_length=128, blank=True,
-                                   help_text="Your contact info.  If at an incident, we suggest listing cell number and email address.")
-    organization = models.CharField(max_length=64, blank=True, help_text="The home organization you usually work for.")
-    jobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title in your home organization.")
+    homeOrganization = models.CharField(max_length=64, blank=True, help_text="The home organization you usually work for.")
+    homeJobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title in your home organization.")
+    contactInfo = models.CharField(max_length=128, blank=True, help_text="Your contact info in your home organization.")
     operations = models.ManyToManyField(Operation, through=Assignment)
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
@@ -234,12 +204,6 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return u'<User %s "%s %s">' % (self.user.username, self.user.first_name, self.user.last_name)
-
-class ProfilePhoneNumber(AbstractPhoneNumber):
-    profile = models.ForeignKey(UserProfile)
-
-class ProfileAddress(AbstractAddress):
-    profile = models.ForeignKey(UserProfile)
 
 class Sensor(models.Model):
     name = models.CharField(max_length=40, blank=True,
@@ -262,7 +226,7 @@ class Sensor(models.Model):
         return self.name
 
 class Feature(models.Model):
-    folder = models.ForeignKey(Folder, default=1)
+    folders = models.ManyToManyField(Folder, default=[1])
     name = models.CharField(max_length=80, blank=True, default='')
     author = models.ForeignKey(User, null=True, related_name='%(app_label)s_%(class)s_authoredSet',
                                help_text='The user who collected the data (when you upload data, Share tags you as the author)')
@@ -314,7 +278,9 @@ class Feature(models.Model):
 
     def utcToLocalTime(self, dtUtc0):
         dtUtc = pytz.utc.localize(dtUtc0)
-        localTz = pytz.timezone(self.getCachedFolder().timeZone)
+        # FIX figure out what time zone to show
+        #localTz = pytz.timezone(self.getCachedFolder().timeZone)
+        localTz = pytz.timezone(settings.TIME_ZONE)
         dtLocal = dtUtc.astimezone(localTz)
         return dtLocal
 
@@ -503,3 +469,9 @@ class ExtentFeature(Feature):
     class Meta:
         abstract = True
         ordering = ['-maxTime']
+
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)
