@@ -198,7 +198,8 @@
             }
             
             .geocam_green {
-                background:#639A4A;
+                /*background:#639A4A;*/
+                background:#2C71BA;
             }
             
             .geocam_error_red {
@@ -244,7 +245,8 @@
             
             body.daytime div#menu_bar_wrapper {
                 color:white;
-                background:#639A4A;
+                /*background:#639A4A;*/
+                background:#2C71BA;
             }
             
             body.nighttime div#menu_bar_wrapper {
@@ -268,7 +270,8 @@
             }
             
             body.daytime ul#menu_bar_items li {
-                border-left:1px solid #9CC294;
+                /*border-left:3px solid #9CC294;*/
+                border-left:4px solid white;
             }
             
             body.daytime ul#menu_bar_items li a,  body.daytime ul#menu_bar_items li a:visited {
@@ -588,7 +591,7 @@
             
             function remember_datum(key, value) {
                 set_cookie(key, value);
-                set_local_storage(key, value);
+                //set_local_storage(key, value);
             }
             
             function get_datum(key) {
@@ -663,7 +666,7 @@
                            go_to_view(last_view);
                         }
                     }
-                    */
+                    
                     
                     // Make sure that the page returns to the last used display mode
                     var last_mode = get_datum('mode');
@@ -673,6 +676,7 @@
                             toggle_night_mode();
                         }
                     }
+                    */
                 }
             })();       
         </script>

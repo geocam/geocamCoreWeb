@@ -7,15 +7,26 @@
         <li>
             <script type="text/javascript" charset="utf-8">
                 function create_summary() {
+                    // Clear the summary table for only the latest data
+                    $('#perms_list').children().remove();
+                    
                     $('#confirm_folder_name').text($('#folder_name').val());
                     
-                    var group_count = $('#group_count').val();
-                    for(var i = 0; i< group_count; i++) {
+                    var group_count = parseInt($('#group_count').val());
+                    console.log(group_count);
+                    
+                    for(var i = 0; i< (group_count+1); i++) {
                         var group_name = $('#group_id_'+i).val();
+                        var group_type = $('#group_type_'+i).val();
                         var group_perms = $('#group_permission_'+i).val();
                         
-                        if(group_perms != "none") {
-                           $('#summary_table').append('<tr><td>'+group_name+'</td><td>'+group_perms+'</td></tr>');
+                        if(group_perms != "none" && typeof(group_perms) != "undefined") {
+                           if(group_type == "user") {
+                               $('#perms_list').append('<tr><td>You</td><td>'+group_perms+'</td></tr>');
+                           }
+                           else {
+                               $('#perms_list').append('<tr><td>'+group_name+'</td><td>'+group_perms+'</td></tr>');
+                           }
                         }
                     }
                 }
@@ -111,7 +122,6 @@
             </table>
         </li>
         <li>
-            <input type="hidden" id="group_count" name="group_count" value="2" />
             <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                     <td>
@@ -148,7 +158,7 @@
                         <td>
                             <input type="hidden" id="group_id_{{ forloop.counter|safe }}" name="group_id_{{ forloop.counter|safe }}" value="{{ group.name|safe }}" />
                             <input type="hidden" id="group_type_{{ forloop.counter|safe }}" name="group_type_{{ forloop.counter|safe }}" value="group" />
-                            <select id="group_permission_1" name="group_permission_1">
+                            <select id="group_permission_{{ forloop.counter|safe }}" name="group_permission_{{ forloop.counter|safe }}">
                                 <option value="admin">Admin</option>
                                 <option value="write">Read + Write</option>
                                 <option value="read">Read Only</option>
@@ -158,7 +168,7 @@
                     </tr>
                 {% endfor %}
             </table>
-            <input type="hidden" name="group_count" value="{{ groups.count }}" />
+            <input type="hidden" id="group_count" name="group_count" value="{{ groups.count }}" />
         </li>
         <li>
             <table id="summary_table" width="100%" border="0" cellspacing="0" cellpadding="5">
@@ -178,6 +188,8 @@
                         <span class="confirm_label">These users will have access to this folder:</span>
                     </td>
                 </tr>
+            </table>
+            <table id="perms_list" width="100%" border="0" cellspacing="0" cellpadding="5">
             </table>
         </li>
     </ul>

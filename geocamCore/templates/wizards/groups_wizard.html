@@ -10,13 +10,57 @@
             
                 //Not the best place for this to be, but it will do for now
                 function add_member_to_list() {
-                    $('#members_list').append('<div id=\"'+invite_index+'\" class=\"invite_widget\">'+$('#invitee_email').val()+' <a href=\"javascript:void(0);\" onclick=\"remove_member_from_list(\''+$('#invitee_email').val()+'\',\''+invite_index+ '\');\">X</a></div>');
+                    show_error('group_invitee_email_error');
                     
-                    $('#members_list_text').val($('#members_list_text').val() + $('#invitee_email').val() + ',');
+                    // Get the values in the invite email field, and setup our list
+                    var invitee_email = $('#invitee_email').val();
+                    var invitee_list = [];
+                    var invalid_list = [];
                     
-                    $('#invitee_email').val('');   
+                    // Check to see if a comma is present, if so split the string and trim spaces
+                    if(invitee_email.indexOf(",") != -1) {
+                        invitee_list = invitee_email.split(",").map(function(str){return str.replace(/^\s+|\s+$/g, '')});
+                    }
+                    else {
+                        invitee_list.push(invitee_email);
+                    }
                     
-                    invite_index++;
+                    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    
+                    console.log(invitee_list);
+                    
+                    clean_list = [];
+                    for(var i = 0; i < invitee_list.length; i++) {
+                        if(invitee_list[i].match(re)) {
+                            clean_list.push(invitee_list[i]);
+                        }
+                        else {
+                            invalid_list.push(invitee_list[i]);
+                        }
+                    }
+                    
+                    invitee_list = clean_list;
+                    
+                    if(invitee_list.length > 0) {
+                        // Iterate through list of emails, adding them to the interface
+                        for(var i = 0; i < invitee_list.length; i++) {
+                            var datum = invitee_list[i];
+                            $('#members_list').append('<div id=\"'+invite_index+'\" class=\"invite_widget\">'+datum+' <a href=\"javascript:void(0);\" onclick=\"remove_member_from_list(\''+datum+'\',\''+invite_index+ '\');\">X</a></div>');
+                            invite_index++;
+                        }
+
+                        $('#members_list_text').val($('#members_list_text').val() + invitee_list.join(',') + ',');
+
+                        $('#invitee_email').val('');
+                    }
+                    else {
+                        show_error('group_invitee_email_error', 'The email address you entered was not valid');
+                    }
+                    
+                    if(invalid_list.length > 0) {
+                        show_error('group_invitee_email_error', 'The email address you entered was not valid');
+                        $('#invitee_email').val(invalid_list.join(','));
+                    }
                 }
                 
                 function remove_member_from_list(email, index) {
@@ -37,26 +81,6 @@
                     
                     
                     $('#confirm_group_members').text(($('#members_list_text').val().split(',').length-1));
-                    
-                    /*
-                    var public_folder = $('#public_folder').checked;
-                    var private_folder = $('#private_folder').checked;
-                    var folder_confirm_string = "No folders created";
-
-                    if(public_folder && private_folder) {
-                        folder_confirm_string = "1 Public & 1 Private folder";
-                    }
-                    else if(public_folder && !private_folder) {
-                        folder_confirm_string = "1 Public folder";
-                    }
-                    else if(!public_folder && private_folder) {
-                        folder_confirm_string = "1 Private folder";
-                    }
-                    
-
-                    var folder_confirm_string = "1 Public & 1 Private folder";
-                    $('#confirm_group_folders').text(folder_confirm_string);
-                    */
                     
                     $('#group_name_private_folder').text($('#group_name').val());
                     $('#group_name_public_folder').text($('#group_name').val());
