@@ -29,13 +29,16 @@
                     <a href="javascript:void();" onclick="document.forms['profile'].submit();" class="big_awesome_button">Save</a>
                 </td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <a href="javascript:void();" onclick="go_to_view('/accounts/manage/')" class="big_awesome_button">Back to Manage</a>
+                </td>
+            </tr>
 
         </table>
 
         <input type="hidden" value="Save" />
         {% csrf_token %}
-
-
 
     </form>
 {% endblock %}

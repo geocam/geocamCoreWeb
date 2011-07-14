@@ -131,6 +131,33 @@
         }
     }
     
+    function hide_error(field) {
+        $('#'+field).hide();
+    }
+    
+    function show_error(field, error_text) {
+        $('#'+field).text(error_text);
+        $('#'+field).show();
+    }
+    
+    function submit_data() {
+        
+        // Get the data from the field
+        var form_data = $('form').serialize();
+        
+        // Make the AJAX request for 
+        $.ajax({
+            url: window.location.pathname,
+            type: 'POST',
+            data: form_data, 
+            success:function(data){
+                if(typeof(submit_data_success_handler) != "undefined") {
+                    submit_data_success_handler(data);
+                }
+            }
+        });
+    }
+    
     $(document).ready(function(){
         // Make sure the wizard is present before going on all this crazy stuff
         if($('#wizard').length > 0) {
@@ -155,7 +182,7 @@
     <h1 class="geocam_table_title">{% block managetitle %}{% endblock %}</h1>
 
     <div id="wizard">
-        <form action="." method="post" accept-charset="utf-8">
+        <form id="wizard_form" name="wizard_form" action="." method="post" accept-charset="utf-8">
             {% block wizard_steps %}
             {% endblock %}
         </form>

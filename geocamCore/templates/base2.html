@@ -286,27 +286,27 @@
             }
             
             body.daytime ul#menu_bar_items li.home {
-                background:url('/media/geocamCore/img/Home_white.png') no-repeat 50% 50%;
+                background:url('/media/geocamCore/img/menu/home_day.png') no-repeat 50% 50%;
             }
             
             body.nighttime ul#menu_bar_items li.home {
-                background:url('/media/geocamCore/img/Home_gr.png') no-repeat 50% 50%;
+                background:url('/media/geocamCore/img/menu/home_night.png') no-repeat 50% 50%;
             }
             
             body.daytime ul#menu_bar_items li.nightday {
-                background:url('/media/geocamCore/img/Mode_sun_white.png') no-repeat 50% 50%;
+                background:url('/media/geocamCore/img/menu/sun_day.png') no-repeat 50% 50%;
             }
             
             body.nighttime ul#menu_bar_items li.nightday {
-                background:url('/media/geocamCore/img/Mode_moon_gr.png') no-repeat 50% 50%;
+                background:url('/media/geocamCore/img/menu/moon_night.png') no-repeat 50% 50%;
             }
             
             body.daytime ul#menu_bar_items li.search {
-                background:url('/media/geocamCore/img/Mag_white.png') no-repeat 50% 50%;
+                background:url('/media/geocamCore/img/menu/mag_day.png') no-repeat 50% 50%;
             }
             
             body.nighttime ul#menu_bar_items li.search {
-                background:url('/media/geocamCore/img/Mag_gr.png') no-repeat 50% 50%;
+                background:url('/media/geocamCore/img/menu/mag_night.png') no-repeat 50% 50%;
             }
             
             ul#menu_bar_items li {
@@ -318,7 +318,10 @@
             }
             
             div#content_wrapper {
-                height:100%;
+                position:fixed;
+                bottom:34px;
+                width:100%;
+                top:48px;
             }
                 
             div#content {
@@ -330,6 +333,8 @@
                 bottom:0px;
                 width:100%;
                 position:fixed;
+                background:transparent;
+                z-index:1000;
             }
             
             body.daytime div#pop_up_menu_wrapper {
@@ -459,8 +464,38 @@
                 color:white;
             }
             
-            
-            
+            table.list_table {
+                margin-top:10px;
+            }
+
+            body.daytime table.list_table { 
+                border:1px solid #CCC;
+            }
+
+            body.nighttime table.list_table { 
+                border:1px solid red;
+            }
+
+            body.daytime table.list_table th {
+                background:#CCC;
+                color:black;
+            }
+
+            body.nighttime table.list_table th {
+                background:red;
+                color:black;
+            }
+
+            table.list_table th {
+                padding:4px;
+                font-weight:bold;
+                text-align:left;
+            }
+
+            table.list_table td {
+                padding:4px;
+            }
+                        
             {% block css %}
             {% endblock %}
         </style>
@@ -471,7 +506,35 @@
                 width:94%;
             }
             
+            div#content_wrapper {
+                position:fixed;
+                bottom:34px;
+                width:100%;
+                top:48px;
+            }
+            
+            .home_icon {
+                padding:0;
+                background-size:50%;
+                min-height:50px;
+            }
+            
             {% block mobilestyles %}
+            {% endblock %}
+        </style>
+
+        <style type="text/css" media="only screen and (max-device-width: 1024px)">
+            table.geocam_table input {
+                width:97%;
+            }
+            
+            /*
+            div#content_wrapper {
+                background:green;
+            }
+            */
+        
+            {% block tablestyles %}
             {% endblock %}
         </style>
         
@@ -484,12 +547,54 @@
             {% block jsInit %}
             {% endblock %}
             
-            function go_to_view(url) {
-                window.location.href = url;
+            var has_local_storage = false;
+            function supports_local_storage() {
+                try {
+                    return 'localStorage' in window && window['localStorage'] !== null;
+                } catch(e){
+                    return false;
+                }
             }
             
-            function toggleMenu() {
-                $('#pop_up_menu_list').slideToggle('slow');
+            function set_cookie(name,value,days) {
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime()+(days*24*60*60*1000));
+                    var expires = "; expires="+date.toGMTString();
+                }
+                else var expires = "";
+                return (document.cookie = name+"="+value+expires+"; path=/");
+            }
+            
+            function set_local_storage(key, value) {
+                if(has_local_storage) {
+                    return localStorage[key] = value;
+                }
+                
+                return false;
+            }
+            
+            function get_local_storage(key) {
+                if(has_local_storage) {
+                    if(typeof(localStorage[key]) != "undefined") {
+                        return localStorage[key];
+                    }
+                
+                    return null;
+                }
+                
+                return false;
+            }
+            
+            function remember_datum(key, value) {
+                set_cookie(key, value);
+                set_local_storage(key, value);
+            }
+            
+            function get_datum(key) {
+                // This isn't really complete, it should fall back to 
+                // a standard cookie if local storage isn't avaliable
+                return get_local_storage(key);
             }
             
             function swapClass(obj, a, b) {
@@ -497,28 +602,69 @@
                 $(obj).addClass(b);
             }
             
-            function toggleNightMode() {
+            function go_to_view(url) {
+                var last_url = get_datum('last_view');
+                
+                if(url != window.location.pathname) {
+                    remember_datum('last_view', url);
+                    window.location.href = url;
+                }
+            }
+            
+            function toggle_night_mode() {
                 var body = document.body;
                 
                 if($(body).hasClass('daytime')) {
                     swapClass(body, 'daytime', 'nighttime');
-                    setCookie('mode', 'nighttime');
+                    remember_datum('mode', 'nighttime');
                 }
                 else {
                     swapClass(body, 'nighttime', 'daytime');
-                    setCookie('mode', 'daytime');
+                    remember_datum('mode', 'daytime');
                 }
             }
             
-            function setCookie(name,value,days) {
-                if (days) {
-                    var date = new Date();
-                    date.setTime(date.getTime()+(days*24*60*60*1000));
-                    var expires = "; expires="+date.toGMTString();
+            function toggle_menu() {
+                $('#pop_up_menu_list').slideToggle('slow');
+            }
+
+            (function(){
+                // Check for LocalStorage support
+                has_local_storage = supports_local_storage();
+                
+                // This is to support resuming of the last view on iOS
+                // We put the path of the last view into local storage.
+                // Then when the page loads again we pull up the last view.
+                // The last view is then restored by calling go_to_view()
+                if(typeof(navigator) != "undefined") {
+                    
+                    var ua = navigator.userAgent;
+                    var is_ios = /iPad/i.test(ua) || /iPhone/i.test(ua) || /iPod/i.test(ua);
+
+                    // Only if we're running on iOS do we need to restore
+                    // the major state of the application
+                    if(is_ios) {
+                        
+                        // Make sure that we return the user to their last state
+                        // This could get trick with forms, wizards and what not
+                        var last_view = get_datum('last_view');
+                        
+                        // This seems overly complicated
+                        if(last_view != null && last_view != false) {
+                           go_to_view(last_view);
+                        }
+                    }
+                    
+                    // Make sure that the page returns to the last used display mode
+                    var last_mode = get_datum('mode');
+                    
+                    if(last_mode != null && last_mode != false) {
+                        if(!$(document.body).hasClass(last_mode)) {
+                            toggle_night_mode();
+                        }
+                    }
                 }
-                else var expires = "";
-                document.cookie = name+"="+value+expires+"; path=/";
-            }       
+            })();       
         </script>
     </head>
     <body class="{% if request.COOKIES.mode %}{{request.COOKIES.mode|safe}}{% else %}daytime{% endif %}">
@@ -530,7 +676,7 @@
                     {% block menubar %}
                     <ul id="menu_bar_items">
                         <li class="home" onclick="go_to_view('/home/');">&nbsp;</li>
-                        <li class="nightday" onclick="toggleNightMode();">&nbsp;</li>
+                        <li class="nightday" onclick="toggle_night_mode();">&nbsp;</li>
                         <li class="search" onclick="go_to_view('/search/');">&nbsp;</li>
                     </ul>
                     {% endblock %}
@@ -556,7 +702,7 @@
                     {% if pop_up_menu_items or account_widget %}
                     
                     <div id="pop_up_menu_control">
-                        <a href="javascript:void();" onclick="toggleMenu();"><span id="direction">Menu</span></a>
+                        <a href="javascript:void();" onclick="toggle_menu();"><span id="direction">Menu</span></a>
                     </div>
                     <div id="pop_up_menu_list">
                         {% if account_widget %}

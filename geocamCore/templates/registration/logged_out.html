@@ -1,7 +1,11 @@
 {% extends "base2.html" %}
 
 {% block popupmenu %} <!-- Zero out popup menu -->{% endblock %}
-{% block menubar %} <!-- Zero out menu items -->{% endblock %}
+{% block menubar %}
+<ul id="menu_bar_items">
+    <li class="home" onclick="go_to_view('/home/');">&nbsp;</li>
+</ul>
+{% endblock %}
 
 {% block contents %}
 

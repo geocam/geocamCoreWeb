@@ -11,13 +11,26 @@
         </tr>
         <tr>
             <td>
-                Groups you are a member of
+                <a href="javascript:void();" onclick="go_to_view('/accounts/manage/')" class="big_awesome_button">Back to Manage</a>
             </td>
         </tr>
+    </table>
+    <table class="geocam_table list_table" border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td>
-                A list of groups will go here.
-            </td>
+            <th>
+                Groups you are a member of
+            </th>
         </tr>
+        {% if groups.all.count > 0 %}
+            {% for group in groups.all %}
+                <tr>
+                    <td>{{ group|safe }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td>You are not a member of any groups.</td>
+            </tr>
+        {% endif %}
     </table>
 {% endblock %}

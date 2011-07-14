@@ -3,7 +3,11 @@
 {% block siteSection %}Login{% endblock %}
 
 {% block popupmenu %} <!-- Zero out popup menu -->{% endblock %}
-{% block menubar %} <!-- Zero out menu items -->{% endblock %}
+{% block menubar %}
+<ul id="menu_bar_items">
+    <li class="home" onclick="go_to_view('/home/');">&nbsp;</li>
+</ul>
+{% endblock %}
 
 {% block css %}
     
@@ -29,7 +33,7 @@
         </tr>
         <tr>
             <td>
-                <input type="text" name="username" id="id_username" />
+                <input type="text" name="username" id="id_username" autocorrect="off" autocapitalize="off" autocomplete="off" />
             </td>
         </tr>
         <tr>
@@ -39,7 +43,7 @@
         </tr>
         <tr>
             <td>
-                <input type="password" name="password" id="id_password" />
+                <input type="password" name="password" id="id_password" autocorrect="off" autocapitalize="off" autocomplete="off" />
             </td>
         </tr>
         <tr>

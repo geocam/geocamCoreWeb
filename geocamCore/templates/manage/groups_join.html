@@ -1,0 +1,49 @@
+{% extends "manage/base_manage.html" %}
+
+{% block managetitle %}Join the {{ group_name|title }} group{% endblock %}
+
+{% block managemenu %}
+    <form name="joingroup" method="POST" action=".">
+        <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+            {% if successful %}
+                <tr>
+                    <td>
+                        You have successfully joined the {{ group_name|title }} group
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <a href="javascript:void();" onclick="go_to_view('/accounts/manage/groups/')" class="big_awesome_button">Back to Manage Groups</a>
+                    </td>
+                </tr>
+            {% else %}
+                {% for field in form %}
+                    {{ field.errors }}
+                    {% if not field.is_hidden %}
+                        <tr>
+                            <td>
+                                {{ field.label_tag }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                {{ field }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr style="display:none;">
+                            <td colspan="2">{{ field }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                <tr>
+                    <td colspan="2">
+                        <a href="javascript:void();" onclick="document.forms['joingroup'].submit();" class="big_awesome_button">Join Group</a>
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+        
+        {% csrf_token %}
+    </form>
+{% endblock %}

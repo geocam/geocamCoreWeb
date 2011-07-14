@@ -13,6 +13,7 @@ urlpatterns = patterns(
     '',
 
     (r'^$', views.index, {'loginRequired':False}),
+    (r'^help/', views.help, {'loginRequired':False}),
     (r'^home/', views.home, {'loginRequired':False}),
     (r'^search/', views.search, {'loginRequired':True}),
 
@@ -29,14 +30,15 @@ urlpatterns = patterns(
      
     (r'^accounts/register/', views.register, {'loginRequired':False}),
     
-    (r'^accounts/manage/', views.manage, {'loginRequired':True}),
-    (r'^accounts/manage/profile/', views.profile, {'loginRequired':True}),
-    
-    (r'^accounts/manage/groups/', views.groups_manage, {'loginRequired':True}),
+    (r'^accounts/manage/groups/join/', views.groups_join, {'loginRequired':True}),
     (r'^accounts/manage/groups/wizard/', views.groups_wizard, {'loginRequired':True}),
+    (r'^accounts/manage/groups/', views.groups_manage, {'loginRequired':True}),
     
-    (r'^accounts/manage/folders/', views.folders_manage, {'loginRequired':True}),
     (r'^accounts/manage/folders/wizard/', views.folders_wizard, {'loginRequired':True}),
+    (r'^accounts/manage/folders/', views.folders_manage, {'loginRequired':True}),
+    
+    (r'^accounts/manage/profile/', views.profile, {'loginRequired':True}),
+    (r'^accounts/manage/', views.manage, {'loginRequired':True}),
 )
 
 if settings.USE_STATIC_SERVE:

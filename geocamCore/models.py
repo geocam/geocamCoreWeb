@@ -104,7 +104,7 @@ class AbstractOperation(models.Model):
     station posting, an incident, an exercise, or whatever makes sense.
     For a discussion of incident file naming conventions see
     http://gis.nwcg.gov/2008_GISS_Resource/student_workbook/unit_lessons/Unit_08_File_Naming_Review.pdf"""
-
+    
     folders = models.ManyToManyField(Folder, related_name='%(app_label)s_%(class)s_folders', default=[1])
     name = models.CharField(max_length=32, blank=True,
                             help_text="A descriptive name for this operation.  Example: 'beaver_pond'.")
@@ -123,11 +123,11 @@ class AbstractOperation(models.Model):
     objects = AbstractModelManager(parentModel=None)
 
     class Meta:
-        abstract = True
-
+        abstract = True    
+    
     def __unicode__(self):
         return '%s %s %s' % (self.__class__.__name__, self.name, self.operationId)
-
+    
 class Operation(AbstractOperation):
     objects = FinalModelManager(parentModel=AbstractOperation)
 
@@ -182,8 +182,50 @@ class GroupProfile(models.Model):
     group = models.OneToOneField(Group, help_text='Reference to corresponding Group object of built-in Django authentication system.')
     context = models.ForeignKey(Context, blank=True, null=True,
                                 help_text='Default context associated with this group.')
+    
+    password = models.CharField(max_length=128, blank=True, null=True)                            
+    
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+    
+    def password_required(self):
+        return (self.password == None)
+    
+    def set_password(self, raw_password):
+        
+        # Make sure the password field isn't set to none
+        if raw_password != None:
+            import hashlib, random
+            
+            # Compute the differnt parts we'll need to secure store the password
+            algo = 'sha1'
+            salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+            hsh = hashlib.sha1(salt + raw_password).hexdigest()
+
+            # Set the password value
+            self.password = '%s$%s$%s' % (algo, salt, hsh)
+    
+    def authenticate(self, user_password):
+        
+        # Make sure the password field isn't set to none
+        if self.password != None:
+            import hashlub
+
+            # Get the parts of the group password
+            parts = self.password.split('$')
+            algo = parts[0]
+            salt = parts[1]
+            hsh = parts[2]
+
+            # Compute the hash of the user password
+            #user_hsh = get_hexdigest(algo, salt, user_password)
+            user_hash = hashlib.sha1(salt + user_password).hexdigest()
+
+            # Retrun the resulting comparison
+            return (hsh == user_hash)
+            
+        else:
+            return True
 
 class UserProfile(models.Model):
     """

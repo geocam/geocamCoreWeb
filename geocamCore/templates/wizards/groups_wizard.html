@@ -62,6 +62,10 @@
                     $('#group_name_public_folder').text($('#group_name').val());
                 }
                 
+                function show_group_name_error() {
+                    show_error('group_name_error', 'You need to specify a unique name for your group');
+                }
+                
                 function validate_submit(step_limit) {
                     stepto = null;
                     
@@ -72,33 +76,23 @@
                     if(step_limit >= 1) {
                         
                         if($('#group_name').val().length == 0) {
-                            $('#group_name_error').text('You need to specify a unique name for your group');
-                            $("#group_name_error").show();
+                            show_group_name_error();
                             stepto = 1;
                         }
                         else {
-                            $("#group_name_error").hide();
+                            hide_error('group_name_error');
                         }
                     }
                     
                     if(step_limit >= 2) {
                                                 
                         if($('#group_password1').val() != $('#group_password2').val()) {
-                            $('#group_password1_error').text('The passwords you entered did not match. Please try again');
-                            $("#group_password1_error").show();
+                            show_error('group_password1_error', 'The passwords you entered did not match. Please try again');
                             stepto = 2;
                         }
                         else {
-                            $('#group_password1_error').hide();
+                            hide_error('group_password1_error');
                         }
-                    }
-                    
-                    if(step_limit >= 3) {
-                       // Skip validation on the first group memebership, just incase you want to create a group of one
-                    }
-                    
-                    if(step_limit >= 4) {
-                        // This is the confirmation step, no need to run validation on it
                     }
                     
                     if(stepto != null) {
@@ -109,10 +103,27 @@
                     return true;
                 }
                 
-                function submit_data() {
-                    alert("You're done! Hooray!");
+                // Handler to respond to a successful submittion to the server
+                function submit_data_success_handler(data) {
+                    if(data.status == "success") {
+                        $('#wizard_steps').hide();
+                        $('#wizard_controls').hide();
+                        $('#complete_view').show();
+                    }
+                    else if(data.status == "fail") {
+                        console.log(data);
+                        for(i = 0; i < data.data.length; i++) {
+                            var datum = data.data[i];
+                            
+                            // Check to see if the 
+                            if(datum.field == "name") {
+                                show_group_name_error();
+                                step_to(1);
+                            }
+                        }
+                    }
                 }
-            
+                
                 function check_group_name_avaliability() {
                     var name = $('#group_name').val();
                 }
@@ -127,17 +138,19 @@
                 <tr>
                     <td colspan="2">
                         <div id="group_name_error" class="wizard_error"></div>
-                        <!--<span class="label">Name of group</span>-->
                         <span class="label">Enter a unique group name</span>
                     </td>
                 </tr>
                 <tr>
-                    <td width="80%">
-                        <input type="text" name="group_name" value="" id="group_name">
+                    <!-- <td width="80%"> -->
+                    <td colspan="2">
+                        <input type="text" name="name" value="" id="group_name">
                     </td>
+                    <!--
                     <td>
                         <button type="button"  id="group_name_check" onclick="check_group_name_avaliability();" class="check_button">Check</button>
                     </td>
+                    -->
                 </tr>
             </table>
         </li>
@@ -206,37 +219,6 @@
                 </tr>
             </table>
         </li>
-        <!--
-        <li>
-            <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                    <td>
-                        <span class="label">Folders for group</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div>
-                            </span> Private
-                        </div>
-                        <div style="padding-left:20px">
-                            Your private folder will be called...
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div>
-                           <span id="group_name_public_folder"></span> Public
-                        </div>    
-                        <div style="padding-left:20px">
-                            Your private folder will be called...
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </li>
-        -->
         <li>
             <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
                 <tr>
@@ -281,6 +263,16 @@
             </table>
         </li>
     </ul>
+    <div id="complete_view" style="display:none;">
+        <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>Your group has been created!</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <a href="javascript:void();" onclick="go_to_view('/accounts/manage/groups/')" class="big_awesome_button">Back to Manage Groups</a>
+                </td>
+            </tr>
+        </table>
+    </div>
 {% endblock %}
-
-            
