@@ -64,13 +64,11 @@
                 
                 function submit_data_success_handler(data) {
                     if(data.status == "success") {
-                        alert("Worked!");
                         $('#wizard_steps').hide();
                         $('#wizard_controls').hide();
                         $('#complete_view').show();
                     }
                     else if(data.status == "fail") {
-                        alert("Failed!");
                         for(i = 0; i < data.data.length; i++) {
                             var datum = data.data[i];
                             

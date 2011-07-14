@@ -625,7 +625,15 @@
             }
             
             function toggle_menu() {
+                $('#direction').toggleClass('menu_close');
                 $('#pop_up_menu_list').slideToggle('slow');
+                
+                if($('#direction').hasClass('menu_close')) {
+                    $('#direction').text('Close Menu');
+                }
+                else {
+                    $('#direction').text('Open Menu');
+                }
             }
 
             (function(){
@@ -703,8 +711,8 @@
                 <div id="pop_up_menu">
                     {% if pop_up_menu_items or account_widget %}
                     
-                    <div id="pop_up_menu_control">
-                        <a href="javascript:void();" onclick="toggle_menu();"><span id="direction">Menu</span></a>
+                    <div id="pop_up_menu_control" onclick="toggle_menu();">
+                        <a href="javascript:void();"><span id="direction">Open Menu</span></a>
                     </div>
                     <div id="pop_up_menu_list">
                         {% if account_widget %}

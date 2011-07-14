@@ -142,9 +142,12 @@
     
     function submit_data() {
         
+        $('#done').hide();
+        $('#working').show();
+        
         // Get the data from the field
         var form_data = $('form').serialize();
-        
+
         // Make the AJAX request for 
         $.ajax({
             url: window.location.pathname,
@@ -152,6 +155,9 @@
             data: form_data, 
             success:function(data){
                 if(typeof(submit_data_success_handler) != "undefined") {
+                    $('#working').hide();
+                    $('#done').show();
+                    
                     submit_data_success_handler(data);
                 }
             }
@@ -190,6 +196,7 @@
             <div id="wizard_controls_inner">
                 <div id="wizard_controls_done_wrapper">
                     <a id="done" class="small_awesome_button" href="javascript:void(0);">Done</a>
+                    <a id="working" class="small_awesome_button" style="display:none;" href="javascript:void(0);">Working..</a>
                 </div>
                 <div id="wizard_controls_next_wrapper">
                     <a id="next" class="small_awesome_button" href="javascript:void(0);">Next</a>
