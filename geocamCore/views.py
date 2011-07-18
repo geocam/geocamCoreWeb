@@ -21,15 +21,14 @@ from geocamUtil import anyjson as json
 from geocamCore.forms import ExtendedUserCreationForm, UserDataForm, ProfileForm, GroupForm, GroupJoinForm
 
 # Add tool for getting account widget
+from geocamUtil.invite import send_group_invites
 from geocamUtil.auth import get_account_widget
 from geocamAware import settings
 
+import urllib
+
 # Import everything form including in the geocamFolder models
 from geocamFolder.models import *
-
-import logging
-
-logger = logging.getLogger(__name__)
 
 def retrun_json_response(data):
     response = json.dumps(data)
@@ -156,11 +155,27 @@ def groups_wizard(request):
             request.user.groups.add(group)
             request.user.save()
             
-            # Get the memeber list, need to figure out the invite system
-            memebers_list = request.POST['members_list'].split(',')
+            # Get the member list, need to figure out the invite system
+            members_list = request.POST['members_list'].rstrip(',').split(',')
+            member_count = len(members_list)
+            
+            # This kind of breaks the flow, but we need to build the join link here
+            group_name = urllib.urlencode({'group':group.name})
+            join_link = request.build_absolute_uri('/accounts/manage/groups/join/?%s' % group_name)
+            
+            # Send mass group invites
+            count = send_group_invites(group, members_list, join_link, group_profile.password_required())
             
             # Send successful JSON response
-            return retrun_json_response({'status':'success', 'data':[]})
+            return retrun_json_response(
+                {
+                    'status':'success', 
+                    'data':[
+                        {'invites_requested':member_count},
+                        {'invites_succesfully_sent':count}
+                    ]
+                }
+            )
         else:
             # Need to figure out how to handle an invalid response
             data = []
@@ -266,9 +281,7 @@ def folders_wizard(request):
                 perm = Actions.WRITE
             elif perm_level == "read":
                 perm = Actions.READ
-            
-            logger.info('Group: %s Perm: %s' % (agent, perm))
-            
+                        
             if agent != None and perm != None:
                 new_folder.setPermissions(agent, perm)
                 

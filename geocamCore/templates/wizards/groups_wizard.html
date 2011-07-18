@@ -80,7 +80,10 @@
                     }
                     
                     
-                    $('#confirm_group_members').text(($('#members_list_text').val().split(',').length-1));
+                    var member_count = $('#members_list_text').val().split(',').length;
+                    var member_count = (member_count == 0) ? 1 : member_count;
+                    
+                    $('#confirm_group_members').text(member_count);
                     
                     $('#group_name_private_folder').text($('#group_name').val());
                     $('#group_name_public_folder').text($('#group_name').val());
@@ -183,6 +186,11 @@
                 <tr>
                     <td colspan="2">
                         <b>Set password</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        We recommend setting a password if you want users to be able to join your group without having to manually add them. This step is optional, but we highly recommend it for groups setup around incidents.
                     </td>
                 </tr>
                 <tr>

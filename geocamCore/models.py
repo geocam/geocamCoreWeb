@@ -226,6 +226,26 @@ class GroupProfile(models.Model):
             
         else:
             return True
+    
+
+class GroupInvite(models.Model):
+    # Model References
+    group = models.ForeignKey(Group, help_text='Reference to correspond Group object of built-in Django authentication system')
+    user = models.ForeignKey(User, blank=True, null=True, help_text='Reference to corresponding User object of built-in Django authentication system')
+    
+    # Email tracking data
+    email = models.CharField(max_length=128, help_text='Email address that this invite was sent to')
+    sent_successfully = models.BooleanField(default=True, help_text='Flag to indicate weither or not this invite was sent succesfully')
+    
+    # Conversion tracking data
+    password_required = models.BooleanField(default=False, help_text='Flag to indicate if this invite requires a password to join the group')
+    existing_user = models.BooleanField(default=False, help_text='Flag to indicate if this email address this was sent to already has a user account associated with it')
+    has_been_redeemed = models.BooleanField(default=False, help_text='Flag to indicate if this invite has been succesfully redeemed yet')
+    conversion = models.BooleanField(default=False, help_text='Flag to indicate if a new user joined as a result of this invite')
+    
+    # Date and time stamps
+    sent = models.DateTimeField(auto_now=True, help_text='Date and time that this invite was sent')
+    redeemed = models.DateTimeField(blank=True, null=True, help_text='Date and time that this invite was succesfully redeemed')
 
 class UserProfile(models.Model):
     """
