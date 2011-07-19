@@ -47,8 +47,21 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td>
                 <a href="javascript:void();" onclick="document.forms['login'].submit();" class="big_awesome_button">Login</a>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                Don't have a GeoCam Account?
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="/accounts/register/{% if request.GET.next %}?next={{ request.GET.next|safe }}{% endif %}" class="big_awesome_button">Create an account</a>
             </td>
         </tr>
     </table>

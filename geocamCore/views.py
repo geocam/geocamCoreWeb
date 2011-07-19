@@ -48,7 +48,16 @@ def register(request):
             # profile_form = ProfileForm(request.POST, instance=user.get_profile())
             # profile_form.save()
             
-            return HttpResponseRedirect('/accounts/login/?next=/home/')
+            next = request.POST.get('next', '/home/')
+            
+            user = authenticate(username=request.POST['username'], password=request.POST['password1'])
+            
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect(next)
+            
+            return HttpResponseRedirect('/accounts/login/?next=%s' % next)
         
     else:
         # profile_form = ProfileForm()

@@ -33,7 +33,7 @@
             </td>
         </tr>
     </table>
-    <input type="hidden" name="next" value="/home/">
+    <input type="hidden" name="next" value="{% if request.GET.next %}{{ request.GET.next|safe }}{% else %}/home/{% endif %}">
     <input type="hidden" value="Join" />
     {% csrf_token %}
 </form>

@@ -16,8 +16,10 @@ from django.contrib.auth.models import Group
 
 from geocamCore.models import UserProfile
 from geocamCore.models import GroupProfile
+from geocamCore.models import GroupInvite
 from geocamFolder.models import *
 
+import datetime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -67,6 +69,21 @@ class GroupJoinForm(forms.Form):
         
         group = Group.objects.get(name=name)
         user = User.objects.get(email=self.cleaned_data['user'])
+        
+        try:
+            invite = GroupInvite.objects.get(group=group, email=self.cleaned_data['user'])
+            
+            invite.user = user
+            invite.has_been_redeemed = True
+            invite.redeemed = datetime.datetime.now()
+            
+            if invite.existing_user == False:
+                invite.conversion = True
+            
+            invite.save()
+            
+        except GroupInvite.DoesNotExist:
+            pass
         
         user.groups.add(group)
         user.save()
