@@ -11,6 +11,9 @@
         <!-- JS -->
         <script type="text/javascript" charset="utf-8" src="/media/external/js/jquery.min.js"></script>
         <script type="text/javascript" charset="utf-8" src="/media/external/js/mootools-classonly.js"></script>
+        {% block scripts %}
+        <!-- Additional Javascript includes -->
+        {% endblock %}
         <script type="text/javascript" charset="utf-8">
             {% block jsSetVars %}
             {% endblock %}
@@ -66,10 +69,6 @@
                 }
             }
         </script>
-        
-        {% block scripts %}
-        <!-- Additional Javascript includes -->
-        {% endblock %}
         
         <link href="/media/geocamCore/css/base-tablet.css" rel="stylesheet" type="text/css" media="only screen and (max-device-width: 1024px)" />
         <link href="/media/geocamCore/css/base-phone.css"  rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px)" />
