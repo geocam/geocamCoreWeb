@@ -8,556 +8,15 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="viewport" content="user-scalable=no, width=device-width" />
         
-        <!-- For launching from home screen -->
-        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> -->
-        
-        <!-- Javascript Includes -->
-        <script src="/media/external/js/jquery.min.js" type="text/javascript"></script>
-        <script src="/media/external/js/mootools-classonly.js" type="text/javascript"></script>
-        
-        {% block scripts %}<!-- Additional Javascript includes -->{% endblock %}
-        
-        <!-- CSS Includes -->
-        <link href="{{ MEDIA_URL }}geocamCore/css/share.css" rel="stylesheet" type="text/css"/>
-        
-        {% block styles %}<!-- Additional CSS includes -->{% endblock %}
-        
-        <!-- CSS -->
-        <style type="text/css" media="all">
-            /* Trying the awesome buttons */
-            a.small_awesome_button, a.small_awesome_button:visited, a.big_awesome_button, a.big_awesome_button:visited, a.awesome, a.awesome:visited {
-                background: #222 url(/media/geocamAware/imgs/alert-overlay.png) repeat-x; 
-                display: inline-block; 
-                padding: 5px 10px 6px; 
-                color: #fff; 
-                text-decoration: none;
-                -moz-border-radius: 5px; 
-                -webkit-border-radius: 5px;
-                -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-                -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-                text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
-                border-bottom: 1px solid rgba(0,0,0,0.25);
-                position: relative;
-                cursor: pointer;
-            }
-            
-            a.small_awesome_button:hover, a.big_awesome_button:hover, a.awesome:hover { 
-                background-color:#111;
-                color: #fff;
-                text-decoration:none; 
-            }
-
-            a.small_awesome_button:active, a.big_awesome_button:active, a.awesome:active { 
-                top: 1px; 
-            }
-
-            a.small.awesome, a.small.awesome:visited { 
-                font-size:11px; 
-                padding: ; 
-            }
-
-            a.awesome, a.awesome:visited, a.medium.awesome, a.medium.awesome:visited {
-                font-size:13px;
-                font-weight:bold;
-                line-height:1; 
-                text-shadow: 0 -1px 1px rgba(0,0,0,0.25); 
-            }
-
-            a.small_awesome_button, a.small_awesome_button:visited, a.big_awesome_button, a.big_awesome_button:visited, a.large.awesome, a.large.awesome:visited { 
-                font-size:14px;
-                padding:8px 10px 9px; 
-            }
-
-            a.green.awesome, a.green.awesome:visited { 
-                background-color: #91bd09; 
-            }
-
-            a.green.awesome:hover { 
-                background-color: #749a02; 
-            }
-
-            a.blue.awesome, a.blue.awesome:visited { 
-                background-color: #2daebf; 
-            }
-
-            a.blue.awesome:hover { 
-                background-color: #007d9a;
-            }
-
-            a.red.awesome, a.red.awesome:visited { 
-                background-color: #e33100; 
-            }
-
-            a.red.awesome:hover { 
-                background-color: #872300; 
-            }
-
-            a.magenta.awesome, a.magenta.awesome:visited { 
-                background-color: #a9014b; 
-            }
-
-            a.magenta.awesome:hover { 
-                background-color: #630030; 
-            }
-
-            a.orange.awesome, a.orange.awesome:visited { 
-                background-color: #ff5c00; 
-            }
-
-            a.orange.awesome:hover { 
-                background-color: #d45500; 
-            }
-
-            a.yellow.awesome, a.yellow.awesome:visited { 
-                background-color: #ffb515; 
-            }
-
-            a.yellow.awesome:hover { 
-                background-color: #fc9200; 
-            }
-            
-            a.managebutton {
-                width:100%;
-                font-size:14px;
-                text-align:center;
-                padding:8px 0px 9px; 
-            }
-            
-            a.big_awesome_button, a.small_awesome_button {
-                font-size:14px;
-                text-align:center;
-            }
-            
-            a.big_awesome_button {
-                width:100%;
-                padding:8px 0px 9px;
-            }
-            
-            body.daytime a.small_awesome_button, body.daytime a.small_awesome_button:visited, body.daytime a.big_awesome_button, body.daytime a.big_awesome_button:visited {
-                background-color: #2daebf; 
-            }
-            
-            body.daytime a.small_awesome_button:hover , body.daytime a.big_awesome_button:hover {
-                background-color: #007d9a;
-            }
-            
-            body.nighttime a.small_awesome_button, body.nighttime a.small_awesome_button:visited, body.nighttime a.big_awesome_button, body.nighttime a.big_awesome_button:visited {
-                background-color: #e33100; 
-                font-weight:bold;
-                color:black;
-            }
-            
-            body.nighttime a.small_awesome_button:hover, body.nighttime a.big_awesome_button:hover {
-                background-color: #872300;
-                font-weight:bold;
-                color:black;
-            }
-                        
-        </style>
-        <style type="text/css" media="all">
-        
-            html, body {
-                font-family:Helvetica; 
-                font-size:14px;
-                padding:0;
-                margin:0;
-                height:100%;
-            }
-            
-            input[type="text"], input[type="password"] {
-                font-size:18px;
-            }
-            
-            body.nighttime input {
-                border:none;
-                border:1px solid red;
-                background:black;
-                color:red;
-            }
-            
-            a, a:visited {
-                text-decoration:none;
-            }
-            
-            body.daytime a, body.daytime a:visited {
-                color:blue;
-            }
-            
-            body.nighttime a, body.nighttime a:visited {
-                color:red;
-            }
-            
-            /* This is so things look right in safari */
-            body.daytime a.small_awesome_button, body.daytime a.small_awesome_button:visited, body.daytime a.big_awesome_button, body.daytime a.big_awesome_button:visited, body.daytime a.awesome, body.daytime a.awesome:visited {
-                color:white;
-            }
-            
-            body.nighttime a.small_awesome_button, body.nighttime a.small_awesome_button:visited, body.nighttime a.big_awesome_button, body.nighttime a.big_awesome_button:visited, body.nighttime a.awesome, body.nighttime a.awesome:visited {
-                text-shadow:none;
-                color:black;
-            }
-            
-            .geocam_green {
-                /*background:#639A4A;*/
-                background:#2C71BA;
-            }
-            
-            .geocam_error_red {
-                color:red;
-            }
-        
-            body.daytime {
-                color:black;
-                background:white;
-            }
-            
-            body.nighttime {
-                color:red;
-                background:black;
-            }
-            
-            div#geocam_logo {
-                padding:0px 0px 0px 3px;
-                font-weight:bold;
-            }
-            
-            div#geocam_logo a, div#geocam_logo a:visited {
-                text-decoration:none;
-            }
-            
-            body.daytime div#geocam_logo a, body.daytime div#geocam_logo a:visited {
-                color:white;
-            }
-            
-            body.nighttime div#geocam_logo a, body.nighttime div#geocam_logo a:visited {
-                color:black;
-            }
-            
-            div#menu_bar_wrapper {
-                line-height:48px;
-                font-size:18px;
-                height:48px;
-            }
-            
-            div#menu_bar {
-                padding:0px 3px;
-            }
-            
-            body.daytime div#menu_bar_wrapper {
-                color:white;
-                /*background:#639A4A;*/
-                background:#2C71BA;
-            }
-            
-            body.nighttime div#menu_bar_wrapper {
-                color:black;
-                background:red;
-            }
-            
-            ul#menu_bar_items {
-                margin:0;
-                padding:0;
-                float:right;
-                list-style-type:none;
-            }
-            
-            ul#menu_bar_items li {    
-                margin:0;
-                width:40px;
-                float:left;
-                padding:0px 10px;
-                text-align:center;
-            }
-            
-            body.daytime ul#menu_bar_items li {
-                /*border-left:3px solid #9CC294;*/
-                border-left:4px solid white;
-            }
-            
-            body.daytime ul#menu_bar_items li a,  body.daytime ul#menu_bar_items li a:visited {
-                color:white;
-                text-decoration:none;
-            }
-            
-            body.nighttime ul#menu_bar_items li {
-                border-left:1px solid black;
-            }
-            
-            body.nighttime ul#menu_bar_items li a,  body.nightime ul#menu_bar_items li a:visited {
-                color:black;
-                text-decoration:none;
-            }
-            
-            body.daytime ul#menu_bar_items li.home {
-                background:url('/media/geocamCore/img/menu/home_day.png') no-repeat 50% 50%;
-            }
-            
-            body.nighttime ul#menu_bar_items li.home {
-                background:url('/media/geocamCore/img/menu/home_night.png') no-repeat 50% 50%;
-            }
-            
-            body.daytime ul#menu_bar_items li.nightday {
-                background:url('/media/geocamCore/img/menu/sun_day.png') no-repeat 50% 50%;
-            }
-            
-            body.nighttime ul#menu_bar_items li.nightday {
-                background:url('/media/geocamCore/img/menu/moon_night.png') no-repeat 50% 50%;
-            }
-            
-            body.daytime ul#menu_bar_items li.search {
-                background:url('/media/geocamCore/img/menu/mag_day.png') no-repeat 50% 50%;
-            }
-            
-            body.nighttime ul#menu_bar_items li.search {
-                background:url('/media/geocamCore/img/menu/mag_night.png') no-repeat 50% 50%;
-            }
-            
-            ul#menu_bar_items li {
-                cursor:pointer;
-            }
-            
-            div#wrapper {
-                height:100%;
-            }
-            
-            div#content_wrapper {
-                position:fixed;
-                bottom:34px;
-                width:100%;
-                top:48px;
-            }
-                
-            div#content {
-                padding:5px;
-                height:100%;
-            }
-            
-            div#pop_up_menu_wrapper {
-                bottom:0px;
-                width:100%;
-                position:fixed;
-                background:transparent;
-                z-index:1000;
-            }
-            
-            body.daytime div#pop_up_menu_wrapper {
-                background:white;
-            }
-            
-            body.nighttime div#pop_up_menu_wrapper {
-                background:black;
-            }
-            
-            div#pop_up_menu {
-                margin:0px 10px 0px 10px;
-            }
-            
-            body.daytime div#pop_up_menu a, body.daytime div#pop_up_menu a:visited {
-                color:white;
-            }
-            
-            body.nighttime div#pop_up_menu a, body.nighttime div#pop_up_menu a:visited {
-                color:red;
-            }
-            
-             div#pop_up_menu_control {
-                padding:5px;
-                text-align:center;
-                border-top-left-radius:7px;
-                border-top-right-radius:7px;
-            }
-            
-            body.daytime div#pop_up_menu_control {
-                color:white;
-                background:#999;
-            }
-            
-            body.nighttime div#pop_up_menu_control {
-                background:red;
-            }
-            
-            body.nighttime div#pop_up_menu_control a {
-                color:black;
-            }
-            
-            div#pop_up_menu_list {
-                display:none;
-                font-weight:bold;
-            }
-            
-            body.daytime div#pop_up_menu_list {
-                background:#2E2D2D;
-            }
-            
-            body.nighttime div#pop_up_menu_list {
-                background:black;
-                border-left:1px solid red;
-                border-right:1px solid red;
-            }
-            
-            div#pop_up_menu_list div {
-                height:40px;
-                line-height:40px;
-                text-align:center;
-            }
-            
-            body.daytime div#pop_up_menu_list div {
-                color:white;
-                border-top:1px solid #919191;
-            }
-            
-            body.nighttime div#pop_up_menu_list div {
-                color:red;
-                border-top:1px solid red;
-            }
-            
-            /* CSS for Management views */
-            table.managetable {
-                width:100%;
-            }
-
-            table.managetable td {
-                height:50px;
-            }
-
-            table.managetable td a {
-            }
-
-            table.managetable td h2 {
-                margin:0;
-                padding:0;
-            }
-            
-            h2.managetitle {
-                padding:0px 5px 5px 5px;
-                margin:0;
-            }
-            
-            h3.steptitle {
-                padding:10px 5px 10px 5px;
-                margin:0;
-            }
-            
-            /* CSS to unify table appearance */
-            table.geocam_table {
-                width:100%;
-            }
-
-            table.geocam_table input {
-                width:99%;
-            }
-            
-            table.geocam_table select {
-                width:100%;
-            }
-
-            table.geocam_table td {
-                padding:5px 0px;
-            }
-
-            h1.geocam_table_title {
-                margin:5px 0px 10px 0px;
-            }
-            
-            input.big_input {
-                width:100%;
-            }
-            
-            body.daytime span#direction {
-                color:white;
-            }
-            
-            table.list_table {
-                margin-top:10px;
-            }
-
-            body.daytime table.list_table { 
-                border:1px solid #CCC;
-            }
-
-            body.nighttime table.list_table { 
-                border:1px solid red;
-            }
-
-            body.daytime table.list_table th {
-                background:#CCC;
-                color:black;
-            }
-
-            body.nighttime table.list_table th {
-                background:red;
-                color:black;
-            }
-
-            table.list_table th {
-                padding:4px;
-                font-weight:bold;
-                text-align:left;
-            }
-
-            table.list_table td {
-                padding:4px;
-            }
-                        
-            {% block css %}
-            {% endblock %}
-        </style>
-        
-        <!-- This is CSS only for mobile devices -->
-        <style type="text/css" media="only screen and (max-device-width: 480px)">
-            table.geocam_table input {
-                width:94%;
-            }
-            
-            div#content_wrapper {
-                position:fixed;
-                bottom:34px;
-                width:100%;
-                top:48px;
-            }
-            
-            .home_icon {
-                padding:0;
-                background-size:50%;
-                min-height:50px;
-            }
-            
-            {% block mobilestyles %}
-            {% endblock %}
-        </style>
-
-        <style type="text/css" media="only screen and (max-device-width: 1024px)">
-            table.geocam_table input {
-                width:97%;
-            }
-            
-            /*
-            div#content_wrapper {
-                background:green;
-            }
-            */
-        
-            {% block tablestyles %}
-            {% endblock %}
-        </style>
-        
         <!-- JS -->
+        <script type="text/javascript" charset="utf-8" src="/media/external/js/jquery.min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/media/external/js/mootools-classonly.js"></script>
         <script type="text/javascript" charset="utf-8">
             {% block jsSetVars %}
             {% endblock %}
             
-            
             {% block jsInit %}
             {% endblock %}
-            
-            var has_local_storage = false;
-            function supports_local_storage() {
-                try {
-                    return 'localStorage' in window && window['localStorage'] !== null;
-                } catch(e){
-                    return false;
-                }
-            }
             
             function set_cookie(name,value,days) {
                 if (days) {
@@ -569,35 +28,8 @@
                 return (document.cookie = name+"="+value+expires+"; path=/");
             }
             
-            function set_local_storage(key, value) {
-                if(has_local_storage) {
-                    return localStorage[key] = value;
-                }
-                
-                return false;
-            }
-            
-            function get_local_storage(key) {
-                if(has_local_storage) {
-                    if(typeof(localStorage[key]) != "undefined") {
-                        return localStorage[key];
-                    }
-                
-                    return null;
-                }
-                
-                return false;
-            }
-            
             function remember_datum(key, value) {
                 set_cookie(key, value);
-                //set_local_storage(key, value);
-            }
-            
-            function get_datum(key) {
-                // This isn't really complete, it should fall back to 
-                // a standard cookie if local storage isn't avaliable
-                return get_local_storage(key);
             }
             
             function swapClass(obj, a, b) {
@@ -606,12 +38,7 @@
             }
             
             function go_to_view(url) {
-                var last_url = get_datum('last_view');
-                
-                if(url != window.location.pathname) {
-                    remember_datum('last_view', url);
-                    window.location.href = url;
-                }
+                window.location.href = url;
             }
             
             function toggle_night_mode() {
@@ -638,48 +65,38 @@
                     $('#direction').text('Open Menu');
                 }
             }
-
-            (function(){
-                // Check for LocalStorage support
-                has_local_storage = supports_local_storage();
-                
-                // This is to support resuming of the last view on iOS
-                // We put the path of the last view into local storage.
-                // Then when the page loads again we pull up the last view.
-                // The last view is then restored by calling go_to_view()
-                if(typeof(navigator) != "undefined") {
-                    
-                    /*
-                    var ua = navigator.userAgent;
-                    var is_ios = /iPad/i.test(ua) || /iPhone/i.test(ua) || /iPod/i.test(ua);
-
-                    // Only if we're running on iOS do we need to restore
-                    // the major state of the application
-                    if(is_ios) {
-                        
-                        // Make sure that we return the user to their last state
-                        // This could get trick with forms, wizards and what not
-                        var last_view = get_datum('last_view');
-                        
-                        // This seems overly complicated
-                        if(last_view != null && last_view != false) {
-                           go_to_view(last_view);
-                        }
-                    }
-                    
-                    
-                    // Make sure that the page returns to the last used display mode
-                    var last_mode = get_datum('mode');
-                    
-                    if(last_mode != null && last_mode != false) {
-                        if(!$(document.body).hasClass(last_mode)) {
-                            toggle_night_mode();
-                        }
-                    }
-                    */
-                }
-            })();       
         </script>
+        
+        {% block scripts %}
+        <!-- Additional Javascript includes -->
+        {% endblock %}
+        
+        <link href="/media/geocamCore/css/base-tablet.css" rel="stylesheet" type="text/css" media="only screen and (max-device-width: 1024px)" />
+        <link href="/media/geocamCore/css/base-phone.css"  rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px)" />
+        <link href="/media/geocamCore/css/base.css" rel="stylesheet" type="text/css" />
+        <link href="/media/geocamCore/css/button.css" rel="stylesheet" type="text/css" />
+        
+        <!-- CSS for all devices-->
+        <style type="text/css" media="all">
+            {% block css %}
+            {% endblock %}
+        </style>
+        
+        <!-- CSS for phones -->
+        <style type="text/css" media="only screen and (max-device-width: 480px)">
+            {% block mobilestyles %}
+            {% endblock %}
+        </style>
+
+        <!-- CSS for tablets -->
+        <style type="text/css" media="only screen and (max-device-width: 1024px)">
+            {% block tablestyles %}
+            {% endblock %}
+        </style>
+        
+        {% block styles %}
+        <!-- Additional CSS includes -->
+        {% endblock %}
     </head>
     <body class="{% if request.COOKIES.mode %}{{request.COOKIES.mode|safe}}{% else %}daytime{% endif %}">
         <div id="wrapper">
@@ -695,7 +112,7 @@
                     </ul>
                     {% endblock %}
                     <div id="geocam_logo">
-                        <a href="javascript:void(0);" onclick="go_to_view('/');">GeoCam</a>
+                        <a href="/home">GeoCam</a>
                     </div>
                 </div>
             </div>
@@ -731,7 +148,6 @@
             </div>
             {% endblock %}
             <!-- End Pop Up Menu -->
-            
         </div>
     </body>
 </html>

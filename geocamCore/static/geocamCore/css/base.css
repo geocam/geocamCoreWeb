@@ -1,0 +1,343 @@
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{font-family: Helvetica, Arial, sans-serif; font-size:16px; }
+
+html, body {
+    font-family:Helvetica; 
+    font-size:14px;
+    padding:0;
+    margin:0;
+    height:100%;
+}
+
+input[type="text"], input[type="password"] {
+    font-size:18px;
+}
+
+body.nighttime input {
+    border:none;
+    border:1px solid red;
+    background:black;
+    color:red;
+}
+
+a, a:visited {
+    text-decoration:none;
+}
+
+body.daytime a, body.daytime a:visited {
+    color:blue;
+}
+
+body.nighttime a, body.nighttime a:visited {
+    color:red;
+}
+
+/* This is so things look right in safari */
+body.daytime a.small_awesome_button, body.daytime a.small_awesome_button:visited, body.daytime a.big_awesome_button, body.daytime a.big_awesome_button:visited, body.daytime a.awesome, body.daytime a.awesome:visited {
+    color:white;
+}
+
+body.nighttime a.small_awesome_button, body.nighttime a.small_awesome_button:visited, body.nighttime a.big_awesome_button, body.nighttime a.big_awesome_button:visited, body.nighttime a.awesome, body.nighttime a.awesome:visited {
+    text-shadow:none;
+    color:black;
+}
+
+.geocam_green {
+    /*background:#639A4A;*/
+    background:#2C71BA;
+}
+
+.geocam_error_red {
+    color:red;
+}
+
+body.daytime {
+    color:black;
+    background:white;
+}
+
+body.nighttime {
+    color:red;
+    background:black;
+}
+
+div#geocam_logo {
+    padding:0px 0px 0px 3px;
+    font-weight:bold;
+}
+
+div#geocam_logo a, div#geocam_logo a:visited {
+    text-decoration:none;
+}
+
+body.daytime div#geocam_logo a, body.daytime div#geocam_logo a:visited {
+    color:white;
+}
+
+body.nighttime div#geocam_logo a, body.nighttime div#geocam_logo a:visited {
+    color:black;
+}
+
+div#menu_bar_wrapper {
+    line-height:48px;
+    font-size:18px;
+    height:48px;
+}
+
+div#menu_bar {
+    padding:0px 3px;
+}
+
+body.daytime div#menu_bar_wrapper {
+    color:white;
+    /*background:#639A4A;*/
+    background:#2C71BA;
+}
+
+body.nighttime div#menu_bar_wrapper {
+    color:black;
+    background:red;
+}
+
+ul#menu_bar_items {
+    margin:0;
+    padding:0;
+    float:right;
+    list-style-type:none;
+}
+
+ul#menu_bar_items li {    
+    margin:0;
+    width:40px;
+    float:left;
+    padding:0px 10px;
+    text-align:center;
+}
+
+body.daytime ul#menu_bar_items li {
+    border-left:4px solid white;
+}
+
+body.daytime ul#menu_bar_items li a,  body.daytime ul#menu_bar_items li a:visited {
+    color:white;
+    text-decoration:none;
+}
+
+body.nighttime ul#menu_bar_items li {
+    border-left:4px solid black;
+}
+
+body.nighttime ul#menu_bar_items li a,  body.nightime ul#menu_bar_items li a:visited {
+    color:black;
+    text-decoration:none;
+}
+
+body.daytime ul#menu_bar_items li.home {
+    background:url('/media/geocamCore/img/menu/home_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime ul#menu_bar_items li.home {
+    background:url('/media/geocamCore/img/menu/home_night.png') no-repeat 50% 50%;
+}
+
+body.daytime ul#menu_bar_items li.nightday {
+    background:url('/media/geocamCore/img/menu/sun_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime ul#menu_bar_items li.nightday {
+    background:url('/media/geocamCore/img/menu/moon_night.png') no-repeat 50% 50%;
+}
+
+body.daytime ul#menu_bar_items li.search {
+    background:url('/media/geocamCore/img/menu/mag_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime ul#menu_bar_items li.search {
+    background:url('/media/geocamCore/img/menu/mag_night.png') no-repeat 50% 50%;
+}
+
+ul#menu_bar_items li {
+    cursor:pointer;
+}
+
+div#wrapper {
+    height:100%;
+}
+
+div#content_wrapper {
+    position:fixed;
+    bottom:34px;
+    width:100%;
+    top:48px;
+}
+    
+div#content {
+    padding:5px;
+    height:100%;
+}
+
+div#pop_up_menu_wrapper {
+    bottom:0px;
+    width:100%;
+    position:fixed;
+    background:transparent;
+    z-index:1000;
+}
+
+body.daytime div#pop_up_menu_wrapper {
+    background:white;
+}
+
+body.nighttime div#pop_up_menu_wrapper {
+    background:black;
+}
+
+div#pop_up_menu {
+    margin:0px 10px 0px 10px;
+}
+
+body.daytime div#pop_up_menu a, body.daytime div#pop_up_menu a:visited {
+    color:white;
+}
+
+body.nighttime div#pop_up_menu a, body.nighttime div#pop_up_menu a:visited {
+    color:red;
+}
+
+ div#pop_up_menu_control {
+    padding:5px;
+    text-align:center;
+    border-top-left-radius:7px;
+    border-top-right-radius:7px;
+}
+
+body.daytime div#pop_up_menu_control {
+    color:white;
+    background:#999;
+}
+
+body.nighttime div#pop_up_menu_control {
+    background:red;
+}
+
+body.nighttime div#pop_up_menu_control a {
+    color:black;
+}
+
+div#pop_up_menu_list {
+    display:none;
+    font-weight:bold;
+}
+
+body.daytime div#pop_up_menu_list {
+    background:#2E2D2D;
+}
+
+body.nighttime div#pop_up_menu_list {
+    background:black;
+    border-left:1px solid red;
+    border-right:1px solid red;
+}
+
+div#pop_up_menu_list div {
+    height:40px;
+    line-height:40px;
+    text-align:center;
+}
+
+body.daytime div#pop_up_menu_list div {
+    color:white;
+    border-top:1px solid #919191;
+}
+
+body.nighttime div#pop_up_menu_list div {
+    color:red;
+    border-top:1px solid red;
+}
+
+/* CSS for Management views */
+table.managetable {
+    width:100%;
+}
+
+table.managetable td {
+    height:50px;
+}
+
+table.managetable td a {
+}
+
+table.managetable td h2 {
+    margin:0;
+    padding:0;
+}
+
+h2.managetitle {
+    padding:0px 5px 5px 5px;
+    margin:0;
+}
+
+h3.steptitle {
+    padding:10px 5px 10px 5px;
+    margin:0;
+}
+
+/* CSS to unify table appearance */
+table.geocam_table {
+    width:100%;
+}
+
+table.geocam_table input {
+    width:99%;
+}
+
+table.geocam_table select {
+    width:100%;
+}
+
+table.geocam_table td {
+    padding:5px 0px;
+}
+
+h1.geocam_table_title {
+    margin:5px 0px 10px 0px;
+}
+
+input.big_input {
+    width:100%;
+}
+
+body.daytime span#direction {
+    color:white;
+}
+
+table.list_table {
+    margin-top:10px;
+}
+
+body.daytime table.list_table { 
+    border:1px solid #CCC;
+}
+
+body.nighttime table.list_table { 
+    border:1px solid red;
+}
+
+body.daytime table.list_table th {
+    background:#CCC;
+    color:black;
+}
+
+body.nighttime table.list_table th {
+    background:red;
+    color:black;
+}
+
+table.list_table th {
+    padding:4px;
+    font-weight:bold;
+    text-align:left;
+}
+
+table.list_table td {
+    padding:4px;
+}

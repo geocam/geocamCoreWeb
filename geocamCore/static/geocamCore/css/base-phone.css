@@ -1,0 +1,16 @@
+table.geocam_table input {
+    width:94%;
+}
+
+div#content_wrapper {
+    position:fixed;
+    bottom:34px;
+    width:100%;
+    top:48px;
+}
+
+.home_icon {
+    padding:0;
+    background-size:50%;
+    min-height:50px;
+}

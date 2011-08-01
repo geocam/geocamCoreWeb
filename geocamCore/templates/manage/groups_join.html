@@ -13,23 +13,37 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <a href="javascript:void();" onclick="go_to_view('/accounts/manage/groups/')" class="big_awesome_button">Back to Manage Groups</a>
+                        <a href="/accounts/manage/groups/" class="big_awesome_button">Back to Manage Groups</a>
                     </td>
                 </tr>
             {% else %}
                 {% for field in form %}
                     {{ field.errors }}
                     {% if not field.is_hidden %}
-                        <tr>
-                            <td>
-                                {{ field.label_tag }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                {{ field }}
-                            </td>
-                        </tr>
+                        {% if field.html_name == "group_password" and requires_password == True %}
+                            <tr>
+                                <td>
+                                    {{ field.label_tag }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ field }}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr style="display:none;">
+                                <td>
+                                    {{ field.label_tag }}
+                                </td>
+                            </tr>
+                            <tr style="display:none;">
+                                <td>
+                                    {{ field }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        
                     {% else %}
                         <tr style="display:none;">
                             <td colspan="2">{{ field }}</td>

@@ -1,0 +1,128 @@
+/* Trying the awesome buttons */
+a.small_awesome_button, a.small_awesome_button:visited, a.big_awesome_button, a.big_awesome_button:visited, a.awesome, a.awesome:visited {
+    background: #222 url(/media/geocamAware/imgs/alert-overlay.png) repeat-x; 
+    display: inline-block; 
+    padding: 5px 10px 6px; 
+    color: #fff; 
+    text-decoration: none;
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    position: relative;
+    cursor: pointer;
+}
+
+a.small_awesome_button:hover, a.big_awesome_button:hover, a.awesome:hover { 
+    background-color:#111;
+    color: #fff;
+    text-decoration:none; 
+}
+
+a.small_awesome_button:active, a.big_awesome_button:active, a.awesome:active { 
+    top: 1px; 
+}
+
+a.small.awesome, a.small.awesome:visited { 
+    font-size:11px; 
+    padding: ; 
+}
+
+a.awesome, a.awesome:visited, a.medium.awesome, a.medium.awesome:visited {
+    font-size:13px;
+    font-weight:bold;
+    line-height:1; 
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.25); 
+}
+
+a.small_awesome_button, a.small_awesome_button:visited, a.big_awesome_button, a.big_awesome_button:visited, a.large.awesome, a.large.awesome:visited { 
+    font-size:14px;
+    padding:8px 10px 9px; 
+}
+
+a.green.awesome, a.green.awesome:visited { 
+    background-color: #91bd09; 
+}
+
+a.green.awesome:hover { 
+    background-color: #749a02; 
+}
+
+a.blue.awesome, a.blue.awesome:visited { 
+    background-color: #2daebf; 
+}
+
+a.blue.awesome:hover { 
+    background-color: #007d9a;
+}
+
+a.red.awesome, a.red.awesome:visited { 
+    background-color: #e33100; 
+}
+
+a.red.awesome:hover { 
+    background-color: #872300; 
+}
+
+a.magenta.awesome, a.magenta.awesome:visited { 
+    background-color: #a9014b; 
+}
+
+a.magenta.awesome:hover { 
+    background-color: #630030; 
+}
+
+a.orange.awesome, a.orange.awesome:visited { 
+    background-color: #ff5c00; 
+}
+
+a.orange.awesome:hover { 
+    background-color: #d45500; 
+}
+
+a.yellow.awesome, a.yellow.awesome:visited { 
+    background-color: #ffb515; 
+}
+
+a.yellow.awesome:hover { 
+    background-color: #fc9200; 
+}
+
+a.managebutton {
+    width:100%;
+    font-size:14px;
+    text-align:center;
+    padding:8px 0px 9px; 
+}
+
+a.big_awesome_button, a.small_awesome_button {
+    font-size:14px;
+    text-align:center;
+}
+
+a.big_awesome_button {
+    width:100%;
+    padding:8px 0px 9px;
+}
+
+body.daytime a.small_awesome_button, body.daytime a.small_awesome_button:visited, body.daytime a.big_awesome_button, body.daytime a.big_awesome_button:visited {
+    background-color: #2daebf; 
+}
+
+body.daytime a.small_awesome_button:hover , body.daytime a.big_awesome_button:hover {
+    background-color: #007d9a;
+}
+
+body.nighttime a.small_awesome_button, body.nighttime a.small_awesome_button:visited, body.nighttime a.big_awesome_button, body.nighttime a.big_awesome_button:visited {
+    background-color: #e33100; 
+    font-weight:bold;
+    color:black;
+}
+
+body.nighttime a.small_awesome_button:hover, body.nighttime a.big_awesome_button:hover {
+    background-color: #872300;
+    font-weight:bold;
+    color:black;
+}
