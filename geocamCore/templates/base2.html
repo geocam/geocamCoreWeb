@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--<html manifest="/geocam.appcache">-->
 <html>
     <head>
         <title>{% block title %}{% block siteSection %}Main{% endblock %} - {% block siteTitle %}GeoCam Share{% endblock %}{% endblock %}</title>
@@ -9,71 +10,27 @@
         <meta name="viewport" content="user-scalable=no, width=device-width" />
         
         <!-- JS -->
-        <script type="text/javascript" charset="utf-8" src="/media/external/js/jquery.min.js"></script>
-        <script type="text/javascript" charset="utf-8" src="/media/external/js/mootools-classonly.js"></script>
-        {% block scripts %}
-        <!-- Additional Javascript includes -->
-        {% endblock %}
+        <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}external/js/jquery.min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}external/js/mootools-classonly.js"></script>
+        <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}geocamCore/js/base.js"></script>
+        
+        {% block scripts %}{% endblock %}
+        
         <script type="text/javascript" charset="utf-8">
             {% block jsSetVars %}
             {% endblock %}
             
             {% block jsInit %}
             {% endblock %}
-            
-            function set_cookie(name,value,days) {
-                if (days) {
-                    var date = new Date();
-                    date.setTime(date.getTime()+(days*24*60*60*1000));
-                    var expires = "; expires="+date.toGMTString();
-                }
-                else var expires = "";
-                return (document.cookie = name+"="+value+expires+"; path=/");
-            }
-            
-            function remember_datum(key, value) {
-                set_cookie(key, value);
-            }
-            
-            function swapClass(obj, a, b) {
-                $(obj).removeClass(a);
-                $(obj).addClass(b);
-            }
-            
-            function go_to_view(url) {
-                window.location.href = url;
-            }
-            
-            function toggle_night_mode() {
-                var body = document.body;
-                
-                if($(body).hasClass('daytime')) {
-                    swapClass(body, 'daytime', 'nighttime');
-                    remember_datum('mode', 'nighttime');
-                }
-                else {
-                    swapClass(body, 'nighttime', 'daytime');
-                    remember_datum('mode', 'daytime');
-                }
-            }
-            
-            function toggle_menu() {
-                $('#direction').toggleClass('menu_close');
-                $('#pop_up_menu_list').slideToggle('slow');
-                
-                if($('#direction').hasClass('menu_close')) {
-                    $('#direction').text('Close Menu');
-                }
-                else {
-                    $('#direction').text('Open Menu');
-                }
-            }
         </script>
         
-        <link href="/media/geocamCore/css/base-tablet.css" rel="stylesheet" type="text/css" media="only screen and (max-device-width: 1024px)" />
-        <link href="/media/geocamCore/css/base-phone.css"  rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px)" />
-        <link href="/media/geocamCore/css/base.css" rel="stylesheet" type="text/css" />
-        <link href="/media/geocamCore/css/button.css" rel="stylesheet" type="text/css" />
+        <!-- CSS -->
+        <link href="{{ MEDIA_URL }}geocamCore/css/base-tablet.css" rel="stylesheet" type="text/css" media="only screen and (max-device-width: 1024px)" />
+        <link href="{{ MEDIA_URL }}geocamCore/css/base-phone.css"  rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px)" />
+        <link href="{{ MEDIA_URL }}geocamCore/css/base.css" rel="stylesheet" type="text/css" />
+        <link href="{{ MEDIA_URL }}geocamCore/css/button.css" rel="stylesheet" type="text/css" />
+        
+        {% block styles %}{% endblock %}
         
         <!-- CSS for all devices-->
         <style type="text/css" media="all">
@@ -92,10 +49,6 @@
             {% block tablestyles %}
             {% endblock %}
         </style>
-        
-        {% block styles %}
-        <!-- Additional CSS includes -->
-        {% endblock %}
     </head>
     <body class="{% if request.COOKIES.mode %}{{request.COOKIES.mode|safe}}{% else %}daytime{% endif %}">
         <div id="wrapper">
@@ -135,11 +88,11 @@
                         <a href="javascript:void();"><span id="direction">Open Menu</span></a>
                     </div>
                     <div id="pop_up_menu_list">
-                        {% if account_widget %}
-                            {{ account_widget|safe }}
-                        {% endif %}
                         {% if pop_up_menu_items %}
                             {{ pop_up_menu_items|safe }}
+                        {% endif %}
+                        {% if account_widget %}
+                            {{ account_widget|safe }}
                         {% endif %}
                     </div>
                     {% endif %}
