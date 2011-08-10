@@ -11,8 +11,14 @@ from geocamCore import views
 
 urlpatterns = patterns(
     '',
-
+    
     (r'^$', views.index, {'loginRequired':False}),
+    
+    # Content Management Endpoints
+    (r'^mini/(?:\?[^/]*)?$', views.mini, {'loginRequired':False}),
+    (r'^geocam\.appcache', views.manifest, {'loginRequired':False}),
+    (r'^urigen/(?:\?[^/]*)?$', views.urigen, {'loginRequired':False}),
+    
     (r'^help/', views.help, {'loginRequired':False}),
     (r'^home/', views.home, {'loginRequired':False}),
     (r'^search/', views.search, {'loginRequired':True}),
