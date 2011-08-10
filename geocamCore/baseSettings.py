@@ -63,7 +63,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '%s/build/media/' % CHECKOUT_DIR
+MEDIA_ROOT = '%sbuild/media/' % CHECKOUT_DIR
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -99,6 +99,7 @@ MIDDLEWARE_CLASSES = (
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'geocamUtil.middleware.SecurityMiddleware',
     'geocamUtil.middleware.LogErrorsMiddleware',
+    'geocamUtil.middleware.LogRequestMiddleware',
 )
 
 TEMPLATE_DIRS = (
