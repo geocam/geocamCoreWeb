@@ -165,6 +165,7 @@ div#wrapper {
 
 div#content_wrapper {
     position:fixed;
+    overflow-y:scroll;
     bottom:34px;
     width:100%;
     top:48px;
