@@ -32,6 +32,10 @@ function toggle_night_mode() {
         swapClass(body, 'nighttime', 'daytime');
         remember_datum('mode', 'daytime');
     }
+    
+    if(typeof(geocamAware) != "undefined") {
+        geocamAware.toggleMapType();
+    }
 }
 
 function toggle_menu() {

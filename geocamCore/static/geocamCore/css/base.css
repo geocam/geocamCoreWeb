@@ -140,11 +140,11 @@ body.nighttime ul#menu_bar_items li.home {
 }
 
 body.daytime ul#menu_bar_items li.nightday {
-    background:url('/media/geocamCore/img/menu/sun_day.png') no-repeat 50% 50%;
+    background:url('/media/geocamCore/img/menu/moon_day.png') no-repeat 50% 50%;
 }
 
 body.nighttime ul#menu_bar_items li.nightday {
-    background:url('/media/geocamCore/img/menu/moon_night.png') no-repeat 50% 50%;
+    background:url('/media/geocamCore/img/menu/sun_night.png') no-repeat 50% 50%;
 }
 
 body.daytime ul#menu_bar_items li.search {
