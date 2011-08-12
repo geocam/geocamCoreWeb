@@ -164,6 +164,10 @@
         });
     }
     
+    var enter_key_handler = function() {
+        step_forward();
+    };
+    
     $(document).ready(function(){
         // Make sure the wizard is present before going on all this crazy stuff
         if($('#wizard').length > 0) {

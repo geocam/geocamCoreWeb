@@ -76,3 +76,16 @@ function toggle_menu() {
 function replaceAll(txt, replace, with_this) {
   return txt.replace(new RegExp(replace, 'g'),with_this);
 }
+
+$(document).ready(function(){
+   $(document).keyup(function(event){
+       if(event.keyCode == 13) {
+           if(typeof(enter_key_handler) != "undefined") {
+               enter_key_handler();
+           }
+           else {
+               $('form').submit();
+           }
+       }
+   });
+});
