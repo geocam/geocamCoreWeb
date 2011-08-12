@@ -1,15 +1,37 @@
 function set_cookie(name,value,days) {
+    var expires = "";
+    
     if (days) {
         var date = new Date();
         date.setTime(date.getTime()+(days*24*60*60*1000));
         var expires = "; expires="+date.toGMTString();
     }
-    else var expires = "";
+
     return (document.cookie = name+"="+value+expires+"; path=/");
+}
+
+function get_cookie(name) {
+    var start = document.cookie.indexOf( name + "=" );
+    var len = start + name.length + 1;
+    
+    if((!start) && (name != document.cookie.substring(0, name.length))) {
+        return null;
+    }
+    
+    if(start == -1) { return null; }
+    
+    var end = document.cookie.indexOf( ";", len );
+    if(end == -1) end = document.cookie.length;
+    
+    return unescape(document.cookie.substring(len, end));
 }
 
 function remember_datum(key, value) {
     set_cookie(key, value);
+}
+
+function get_datum(key) {
+    return get_cookie(key);
 }
 
 function swapClass(obj, a, b) {
@@ -39,7 +61,7 @@ function toggle_night_mode() {
 }
 
 function toggle_menu() {
-    console.log("Hello!");
+    // console.log("Hello!");
     $('#direction').toggleClass('menu_close');
     $('#pop_up_menu_list').slideToggle('slow');
 
