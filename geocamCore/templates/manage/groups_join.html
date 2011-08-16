@@ -3,7 +3,7 @@
 {% block managetitle %}Join the {{ group_name|title }} group{% endblock %}
 
 {% block managemenu %}
-    <form name="joingroup" method="POST" action=".">
+    <form name="joingroup" method="POST" action="." onsubmit="return advance_form(this);">
         <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
             {% if successful %}
                 <tr>
@@ -52,7 +52,7 @@
                 {% endfor %}
                 <tr>
                     <td colspan="2">
-                        <a href="javascript:void();" onclick="document.forms['joingroup'].submit();" class="big_awesome_button">Join Group</a>
+                        <input type="submit" id="hidden_submit" name="hidden_submit" value="Join Group" class="big_awesome_button" />
                     </td>
                 </tr>
             {% endif %}

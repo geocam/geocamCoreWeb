@@ -2,7 +2,7 @@
 
 {% block contents %}
 
-<form name="search" method="GET" action="/geocamAware/list">
+<form name="search" method="GET" action="/geocamAware/list" onsubmit="return advance_form(this);">
     <h1 class="geocam_table_title">Search</h1>
 
     <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
@@ -18,7 +18,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <a href="javascript:void();" onclick="document.forms['search'].submit();" class="big_awesome_button">Search</a>
+                <input type="submit" id="hidden_submit" name="hidden_submit" value="Search" class="big_awesome_button" />
             </td>
         </tr>
     </table>

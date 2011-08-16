@@ -3,7 +3,7 @@
 {% block managetitle %}Manage Profile{% endblock %}
 
 {% block managemenu %}
-    <form name="profile" method="POST" action=".">
+    <form name="profile" method="POST" action="." onsubmit="return advance_form(this);">
         
         <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
             {% for field in user_form %}
@@ -26,7 +26,7 @@
 
             <tr>
                 <td colspan="2">
-                    <a href="javascript:void();" onclick="document.forms['profile'].submit();" class="big_awesome_button">Save</a>
+                    <input type="submit" id="hidden_submit" name="hidden_submit" value="Save" class="big_awesome_button" />
                 </td>
             </tr>
             <tr>

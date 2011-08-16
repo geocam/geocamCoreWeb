@@ -15,7 +15,7 @@
 
 {% block contents %}
 
-<form name="login" method="POST" action=".">
+<form name="login" method="POST" action="." onsubmit="return advance_form(this);">
     <h1 class="geocam_table_title">Login</h1>
 
     <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
@@ -48,7 +48,7 @@
         </tr>
         <tr>
             <td>
-                <a href="javascript:void();" onclick="document.forms['login'].submit();" class="big_awesome_button">Login</a>
+                <input type="submit" id="hidden_submit" name="hidden_submit" value="Login" class="big_awesome_button" />
             </td>
         </tr>
         <tr>
@@ -61,13 +61,12 @@
         </tr>
         <tr>
             <td>
-                <a href="/accounts/register/{% if request.GET.next %}?next={{ request.GET.next|safe }}{% endif %}" class="big_awesome_button">Create an account</a>
+                <input type="button" onclick="go_to_view('/accounts/register/{% if request.GET.next %}?next={{ request.GET.next|safe }}{% endif %}');" class="big_awesome_button" value="Create an account" />
             </td>
         </tr>
     </table>
-
+        
     <input type="hidden" name="next" value="{{ next }}" />
-    <input type="hidden" value="Login" />
     {% csrf_token %}
 </form>
 

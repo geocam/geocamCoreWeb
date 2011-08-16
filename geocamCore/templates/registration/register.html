@@ -29,12 +29,11 @@
         {% endfor %}
         <tr>
             <td colspan="2">
-                <a class="big_awesome_button" href="javascript:void(0);" onclick="document.forms['register'].submit();">Create Account</a>
+                <input type="submit" id="hidden_submit" name="hidden_submit" value="Create Account" class="big_awesome_button" />
             </td>
         </tr>
     </table>
     <input type="hidden" name="next" value="{% if request.GET.next %}{{ request.GET.next|safe }}{% else %}/home/{% endif %}">
-    <input type="hidden" value="Join" />
     {% csrf_token %}
 </form>
 

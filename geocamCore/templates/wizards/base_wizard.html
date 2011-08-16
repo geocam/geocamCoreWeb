@@ -60,7 +60,6 @@
 {% endblock %}
 
 {% block jsInit %}
-    
     var current_step = 1;
     var step_count = 0;
     
@@ -164,9 +163,18 @@
         });
     }
     
-    var enter_key_handler = function() {
-        step_forward();
-    };
+    function submit_catcher() {
+        if($('#next').is(':visible')) {
+            console.log('Next is visible');
+            step_forward();
+        }
+        else {
+            console.log('Isnt visible');
+            step_to_complete();
+        }
+        
+        return false;
+    }
     
     $(document).ready(function(){
         // Make sure the wizard is present before going on all this crazy stuff
@@ -179,36 +187,39 @@
                 $('ul#wizard_steps li:nth-child('+current_step+')').show();
                 
                 // Setup listeners for the next and last options
-                $('#next').click(step_forward);
+                // $('#next').click(step_forward);
+                // $('#done').click(step_to_complete);
+                
                 $('#back').click(step_back);
-                $('#done').click(step_to_complete);
             }
         }
     });
-    
 {% endblock %}
 
 {% block contents %}
     <h1 class="geocam_table_title">{% block managetitle %}{% endblock %}</h1>
 
     <div id="wizard">
-        <form id="wizard_form" name="wizard_form" action="." method="post" accept-charset="utf-8">
-            {% block wizard_steps %}
-            {% endblock %}
-        </form>
-        <div id="wizard_controls">
-            <div id="wizard_controls_inner">
-                <div id="wizard_controls_done_wrapper">
-                    <a id="done" class="small_awesome_button" href="javascript:void(0);">Done</a>
-                    <a id="working" class="small_awesome_button" style="display:none;" href="javascript:void(0);">Working..</a>
-                </div>
-                <div id="wizard_controls_next_wrapper">
-                    <a id="next" class="small_awesome_button" href="javascript:void(0);">Next</a>
-                </div>
-                <div id="wizard_controls_back_wrapper">
-                    <a id="back" class="small_awesome_button" href="javascript:void(0);">Back</a>
+        <form onsubmit="return advance_form(this);">
+            <div id="form_contents">
+                {% block wizard_steps %}
+                {% endblock %}
+            </div>
+            
+            <div id="wizard_controls">
+                <div id="wizard_controls_inner">
+                    <div id="wizard_controls_done_wrapper">
+                        <input type="submit" id="done" name="done" value="Done" class="small_awesome_button" />
+                        <a id="working" class="small_awesome_button" style="display:none;" href="javascript:void(0);">Working..</a>
+                    </div>
+                    <div id="wizard_controls_next_wrapper">
+                        <input type="submit" id="next" name="next" value="Next" class="small_awesome_button" />
+                    </div>
+                    <div id="wizard_controls_back_wrapper">
+                        <a id="back" class="small_awesome_button" href="javascript:void(0);">Back</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 {% endblock %}

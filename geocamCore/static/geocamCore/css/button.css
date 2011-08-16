@@ -1,5 +1,5 @@
 /* Trying the awesome buttons */
-a.small_awesome_button, a.small_awesome_button:visited, a.big_awesome_button, a.big_awesome_button:visited, a.awesome, a.awesome:visited {
+.small_awesome_button, .small_awesome_button:visited, .big_awesome_button, .big_awesome_button:visited, a.awesome, a.awesome:visited {
     background: #222 url(/media/geocamAware/imgs/alert-overlay.png) repeat-x; 
     display: inline-block; 
     padding: 5px 10px 6px; 
@@ -15,13 +15,13 @@ a.small_awesome_button, a.small_awesome_button:visited, a.big_awesome_button, a.
     cursor: pointer;
 }
 
-a.small_awesome_button:hover, a.big_awesome_button:hover, a.awesome:hover { 
+.small_awesome_button:hover, .big_awesome_button:hover, a.awesome:hover { 
     background-color:#111;
     color: #fff;
     text-decoration:none; 
 }
 
-a.small_awesome_button:active, a.big_awesome_button:active, a.awesome:active { 
+.small_awesome_button:active, .big_awesome_button:active, a.awesome:active { 
     top: 1px; 
 }
 
@@ -37,7 +37,7 @@ a.awesome, a.awesome:visited, a.medium.awesome, a.medium.awesome:visited {
     text-shadow: 0 -1px 1px rgba(0,0,0,0.25); 
 }
 
-a.small_awesome_button, a.small_awesome_button:visited, a.big_awesome_button, a.big_awesome_button:visited, a.large.awesome, a.large.awesome:visited { 
+.small_awesome_button, .small_awesome_button:visited, .big_awesome_button, .big_awesome_button:visited, a.large.awesome, a.large.awesome:visited { 
     font-size:14px;
     padding:8px 10px 9px; 
 }
@@ -97,31 +97,38 @@ a.managebutton {
     padding:8px 0px 9px; 
 }
 
-a.big_awesome_button, a.small_awesome_button {
+.big_awesome_button, .small_awesome_button {
     font-size:14px;
     text-align:center;
 }
 
-a.big_awesome_button {
+.big_awesome_button {
     width:100%;
     padding:8px 0px 9px;
+    border:0;
+    margin:0;
 }
 
-body.daytime a.small_awesome_button, body.daytime a.small_awesome_button:visited, body.daytime a.big_awesome_button, body.daytime a.big_awesome_button:visited {
+.small_awesome_button {
+    border:0;
+    margin:0;
+}
+
+body.daytime .small_awesome_button, body.daytime .small_awesome_button:visited, body.daytime .big_awesome_button, body.daytime .big_awesome_button:visited {
     background-color: #2daebf; 
 }
 
-body.daytime a.small_awesome_button:hover , body.daytime a.big_awesome_button:hover {
+body.daytime .small_awesome_button:hover , body.daytime .big_awesome_button:hover {
     background-color: #007d9a;
 }
 
-body.nighttime a.small_awesome_button, body.nighttime a.small_awesome_button:visited, body.nighttime a.big_awesome_button, body.nighttime a.big_awesome_button:visited {
+body.nighttime .small_awesome_button, body.nighttime .small_awesome_button:visited, body.nighttime .big_awesome_button, body.nighttime .big_awesome_button:visited {
     background-color: #e33100; 
     font-weight:bold;
     color:black;
 }
 
-body.nighttime a.small_awesome_button:hover, body.nighttime a.big_awesome_button:hover {
+body.nighttime .small_awesome_button:hover, body.nighttime .big_awesome_button:hover {
     background-color: #872300;
     font-weight:bold;
     color:black;

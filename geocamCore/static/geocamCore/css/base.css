@@ -287,7 +287,7 @@ table.geocam_table {
     width:100%;
 }
 
-table.geocam_table input {
+table.geocam_table input[type="text"] {
     width:99%;
 }
 

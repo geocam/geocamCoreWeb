@@ -3,159 +3,155 @@
 {% block managetitle %}Create a group{% endblock %}
 
 {% block wizard_steps %}
+    <script type="text/javascript" charset="utf-8">
+        var invite_index = 0;
+    
+        //Not the best place for this to be, but it will do for now
+        function add_member_to_list() {
+            show_error('group_invitee_email_error');
+            
+            // Get the values in the invite email field, and setup our list
+            var invitee_email = $('#invitee_email').val();
+            var invitee_list = [];
+            var invalid_list = [];
+            
+            // Check to see if a comma is present, if so split the string and trim spaces
+            if(invitee_email.indexOf(",") != -1) {
+                invitee_list = invitee_email.split(",").map(function(str){return str.replace(/^\s+|\s+$/g, '')});
+            }
+            else {
+                invitee_list.push(invitee_email);
+            }
+            
+            var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            
+            clean_list = [];
+            for(var i = 0; i < invitee_list.length; i++) {
+                if(invitee_list[i].match(re)) {
+                    clean_list.push(invitee_list[i]);
+                }
+                else {
+                    invalid_list.push(invitee_list[i]);
+                }
+            }
+            
+            invitee_list = clean_list;
+            
+            if(invitee_list.length > 0) {
+                // Iterate through list of emails, adding them to the interface
+                for(var i = 0; i < invitee_list.length; i++) {
+                    var datum = invitee_list[i];
+                    $('#members_list').append('<div id=\"'+invite_index+'\" class=\"invite_widget\">'+datum+' <a href=\"javascript:void(0);\" onclick=\"remove_member_from_list(\''+datum+'\',\''+invite_index+ '\');\">X</a></div>');
+                    invite_index++;
+                }
+
+                $('#members_list_text').val($('#members_list_text').val() + invitee_list.join(',') + ',');
+
+                $('#invitee_email').val('');
+            }
+            else {
+                show_error('group_invitee_email_error', 'The email address you entered was not valid');
+            }
+            
+            if(invalid_list.length > 0) {
+                show_error('group_invitee_email_error', 'The email address you entered was not valid');
+                $('#invitee_email').val(invalid_list.join(','));
+            }
+        }
+        
+        function remove_member_from_list(email, index) {
+            $('#members_list_text').val($('#members_list_text').val().replace(email + ',', ''));
+            $('#'+index).remove();
+        }
+
+        function create_summary() {
+            $('#confirm_group_name').text($('#group_name').val());
+            
+            if($('#group_password1').val().length != 0) {
+                $('#confirm_group_password').text($('#group_password1').val());
+            }
+            else {
+                $('#confirm_group_password').text("(No password set)");
+            }
+            
+            
+            var member_count = ($('#members_list_text').val().split(',').length - 1);
+            var member_count_text = "You";
+            
+            if(member_count > 0) {
+                member_count_text = member_count_text + " + " + member_count;
+            }
+            
+            $('#confirm_group_members').text(member_count_text);
+            
+            $('#group_name_private_folder').text($('#group_name').val());
+            $('#group_name_public_folder').text($('#group_name').val());
+        }
+        
+        function show_group_name_error() {
+            show_error('group_name_error', 'You need to specify a unique name for your group');
+        }
+        
+        function validate_submit(step_limit) {
+            stepto = null;
+            
+            if(typeof(step_limit) == "undefined") {
+                step_limit = step_count;
+            }
+            
+            if(step_limit >= 1) {
+                
+                if($('#group_name').val().length == 0) {
+                    show_group_name_error();
+                    stepto = 1;
+                }
+                else {
+                    hide_error('group_name_error');
+                }
+            }
+            
+            if(step_limit >= 2) {
+                                        
+                if($('#group_password1').val() != $('#group_password2').val()) {
+                    show_error('group_password1_error', 'The passwords you entered did not match. Please try again');
+                    stepto = 2;
+                }
+                else {
+                    hide_error('group_password1_error');
+                }
+            }
+            
+            if(stepto != null) {
+                step_to(stepto);
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Handler to respond to a successful submittion to the server
+        function submit_data_success_handler(data) {
+            if(data.status == "success") {
+                $('#wizard_steps').hide();
+                $('#wizard_controls').hide();
+                $('#complete_view').show();
+            }
+            else if(data.status == "fail") {
+
+                for(i = 0; i < data.data.length; i++) {
+                    var datum = data.data[i];
+                    
+                    // Check to see if the 
+                    if(datum.field == "name") {
+                        show_group_name_error();
+                        step_to(1);
+                    }
+                }
+            }
+        }
+    </script>
     <ul id="wizard_steps">
         <li>
-            <script type="text/javascript" charset="utf-8">
-                var invite_index = 0;
-            
-                //Not the best place for this to be, but it will do for now
-                function add_member_to_list() {
-                    show_error('group_invitee_email_error');
-                    
-                    // Get the values in the invite email field, and setup our list
-                    var invitee_email = $('#invitee_email').val();
-                    var invitee_list = [];
-                    var invalid_list = [];
-                    
-                    // Check to see if a comma is present, if so split the string and trim spaces
-                    if(invitee_email.indexOf(",") != -1) {
-                        invitee_list = invitee_email.split(",").map(function(str){return str.replace(/^\s+|\s+$/g, '')});
-                    }
-                    else {
-                        invitee_list.push(invitee_email);
-                    }
-                    
-                    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                    
-                    console.log(invitee_list);
-                    
-                    clean_list = [];
-                    for(var i = 0; i < invitee_list.length; i++) {
-                        if(invitee_list[i].match(re)) {
-                            clean_list.push(invitee_list[i]);
-                        }
-                        else {
-                            invalid_list.push(invitee_list[i]);
-                        }
-                    }
-                    
-                    invitee_list = clean_list;
-                    
-                    if(invitee_list.length > 0) {
-                        // Iterate through list of emails, adding them to the interface
-                        for(var i = 0; i < invitee_list.length; i++) {
-                            var datum = invitee_list[i];
-                            $('#members_list').append('<div id=\"'+invite_index+'\" class=\"invite_widget\">'+datum+' <a href=\"javascript:void(0);\" onclick=\"remove_member_from_list(\''+datum+'\',\''+invite_index+ '\');\">X</a></div>');
-                            invite_index++;
-                        }
-
-                        $('#members_list_text').val($('#members_list_text').val() + invitee_list.join(',') + ',');
-
-                        $('#invitee_email').val('');
-                    }
-                    else {
-                        show_error('group_invitee_email_error', 'The email address you entered was not valid');
-                    }
-                    
-                    if(invalid_list.length > 0) {
-                        show_error('group_invitee_email_error', 'The email address you entered was not valid');
-                        $('#invitee_email').val(invalid_list.join(','));
-                    }
-                }
-                
-                function remove_member_from_list(email, index) {
-                    $('#members_list_text').val($('#members_list_text').val().replace(email + ',', ''));
-                    $('#'+index).remove();
-                    
-                }
-
-                function create_summary() {
-                    $('#confirm_group_name').text($('#group_name').val());
-                    
-                    if($('#group_password1').val().length != 0) {
-                        $('#confirm_group_password').text($('#group_password1').val());
-                    }
-                    else {
-                        $('#confirm_group_password').text("(No password set)");
-                    }
-                    
-                    
-                    var member_count = $('#members_list_text').val().split(',').length;
-                    var member_count = (member_count == 0) ? 1 : member_count;
-                    
-                    $('#confirm_group_members').text(member_count);
-                    
-                    $('#group_name_private_folder').text($('#group_name').val());
-                    $('#group_name_public_folder').text($('#group_name').val());
-                }
-                
-                function show_group_name_error() {
-                    show_error('group_name_error', 'You need to specify a unique name for your group');
-                }
-                
-                function validate_submit(step_limit) {
-                    stepto = null;
-                    
-                    if(typeof(step_limit) == "undefined") {
-                        step_limit = step_count;
-                    }
-                    
-                    if(step_limit >= 1) {
-                        
-                        if($('#group_name').val().length == 0) {
-                            show_group_name_error();
-                            stepto = 1;
-                        }
-                        else {
-                            hide_error('group_name_error');
-                        }
-                    }
-                    
-                    if(step_limit >= 2) {
-                                                
-                        if($('#group_password1').val() != $('#group_password2').val()) {
-                            show_error('group_password1_error', 'The passwords you entered did not match. Please try again');
-                            stepto = 2;
-                        }
-                        else {
-                            hide_error('group_password1_error');
-                        }
-                    }
-                    
-                    if(stepto != null) {
-                        step_to(stepto);
-                        return false;
-                    }
-                    
-                    return true;
-                }
-                
-                // Handler to respond to a successful submittion to the server
-                function submit_data_success_handler(data) {
-                    if(data.status == "success") {
-                        $('#wizard_steps').hide();
-                        $('#wizard_controls').hide();
-                        $('#complete_view').show();
-                    }
-                    else if(data.status == "fail") {
-
-                        for(i = 0; i < data.data.length; i++) {
-                            var datum = data.data[i];
-                            
-                            // Check to see if the 
-                            if(datum.field == "name") {
-                                show_group_name_error();
-                                step_to(1);
-                            }
-                        }
-                    }
-                }
-                
-                function check_group_name_avaliability() {
-                    var name = $('#group_name').val();
-                }
-            
-            </script>
             <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                     <td colspan="2">
@@ -169,15 +165,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <!-- <td width="80%"> -->
                     <td colspan="2">
                         <input type="text" name="name" value="" id="group_name">
                     </td>
-                    <!--
-                    <td>
-                        <button type="button"  id="group_name_check" onclick="check_group_name_avaliability();" class="check_button">Check</button>
-                    </td>
-                    -->
                 </tr>
             </table>
         </li>
@@ -190,7 +180,8 @@
                 </tr>
                 <tr>
                     <td>
-                        We recommend setting a password if you want users to be able to join your group without having to manually add them. This step is optional, but we highly recommend it for groups setup around incidents.
+                        We recommend setting a password if you want users to be able to join your group without having to manually add them. 
+                        This step is optional, but we highly recommend it for groups setup around incidents.
                     </td>
                 </tr>
                 <tr>

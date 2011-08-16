@@ -3,99 +3,93 @@
 {% block managetitle %}Create a folder{% endblock %}
 
 {% block wizard_steps %}
+    <script type="text/javascript" charset="utf-8">
+        function create_summary() {
+            // Clear the summary table for only the latest data
+            $('#perms_list').children().remove();
+            
+            $('#confirm_folder_name').text($('#folder_name').val());
+            
+            var group_count = parseInt($('#group_count').val());
+            
+            for(var i = 0; i< (group_count+1); i++) {
+                var group_name = $('#group_id_'+i).val();
+                var group_type = $('#group_type_'+i).val();
+                var group_perms = $('#group_permission_'+i).val();
+                
+                if(group_perms != "none" && typeof(group_perms) != "undefined") {
+                   if(group_type == "user") {
+                       $('#perms_list').append('<tr><td>You</td><td>'+group_perms+'</td></tr>');
+                   }
+                   else {
+                       $('#perms_list').append('<tr><td>'+group_name+'</td><td>'+group_perms+'</td></tr>');
+                   }
+                }
+            }
+        }
+        
+        function show_folder_name_error() {
+            show_error('folder_name_error', 'You need to specify a unique name for your group');
+        }
+        
+        function validate_submit(step_limit) {
+            stepto = null;
+            
+            if(typeof(step_limit) == "undefined") {
+                step_limit = step_count;
+            }
+             
+            // This is to block off the different validation steps, to support 
+            // validation when clicking next or back
+            if(step_limit >= 1) {
+                if($('#folder_name').val().length == 0) {
+                    show_folder_name_error();
+                    stepto = 1;
+                }
+                else {
+                    hide_error('folder_name_error');
+                }
+            }
+            
+            if(step_limit >= 2) {
+                if($('#group_permission_0').val() != "admin") {
+                    $('#permissions_error').text('Your account must have admin privileges to this folder.');
+                    $('#permissions_error').show();
+                    stepto = 2;
+                }
+                else {
+                    hide_error('permissions_error');
+                }
+            }
+            
+            if(stepto != null) {
+                step_to(stepto);
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function submit_data_success_handler(data) {
+            if(data.status == "success") {
+                $('#wizard_steps').hide();
+                $('#wizard_controls').hide();
+                $('#complete_view').show();
+            }
+            else if(data.status == "fail") {
+                for(i = 0; i < data.data.length; i++) {
+                    var datum = data.data[i];
+                    
+                    if(datum.field == "folder_name") {
+                        show_folder_name_error();
+                        step_to(1);
+                    }
+                }
+            }
+        }
+    </script>
     <ul id="wizard_steps">
         <li>
-            <script type="text/javascript" charset="utf-8">
-                function create_summary() {
-                    // Clear the summary table for only the latest data
-                    $('#perms_list').children().remove();
-                    
-                    $('#confirm_folder_name').text($('#folder_name').val());
-                    
-                    var group_count = parseInt($('#group_count').val());
-                    console.log(group_count);
-                    
-                    for(var i = 0; i< (group_count+1); i++) {
-                        var group_name = $('#group_id_'+i).val();
-                        var group_type = $('#group_type_'+i).val();
-                        var group_perms = $('#group_permission_'+i).val();
-                        
-                        if(group_perms != "none" && typeof(group_perms) != "undefined") {
-                           if(group_type == "user") {
-                               $('#perms_list').append('<tr><td>You</td><td>'+group_perms+'</td></tr>');
-                           }
-                           else {
-                               $('#perms_list').append('<tr><td>'+group_name+'</td><td>'+group_perms+'</td></tr>');
-                           }
-                        }
-                    }
-                }
-                
-                function show_folder_name_error() {
-                    show_error('folder_name_error', 'You need to specify a unique name for your group');
-                }
-                
-                function validate_submit(step_limit) {
-                    stepto = null;
-                    
-                    if(typeof(step_limit) == "undefined") {
-                        step_limit = step_count;
-                    }
-                     
-                    // This is to block off the different validation steps, to support 
-                    // validation when clicking next or back
-                    if(step_limit >= 1) {
-                        if($('#folder_name').val().length == 0) {
-                            show_folder_name_error();
-                            stepto = 1;
-                        }
-                        else {
-                            hide_error('folder_name_error');
-                        }
-                    }
-                    
-                    if(step_limit >= 2) {
-                        if($('#group_permission_0').val() != "admin") {
-                            $('#permissions_error').text('Your account must have admin privileges to this folder.');
-                            $('#permissions_error').show();
-                            stepto = 2;
-                        }
-                        else {
-                            hide_error('permissions_error');
-                        }
-                    }
-                    
-                    if(stepto != null) {
-                        step_to(stepto);
-                        return false;
-                    }
-                    
-                    return true;
-                }
-                
-                function submit_data_success_handler(data) {
-                    if(data.status == "success") {
-                        $('#wizard_steps').hide();
-                        $('#wizard_controls').hide();
-                        $('#complete_view').show();
-                    }
-                    else if(data.status == "fail") {
-                        for(i = 0; i < data.data.length; i++) {
-                            var datum = data.data[i];
-                            
-                            if(datum.field == "folder_name") {
-                                show_folder_name_error();
-                                step_to(1);
-                            }
-                        }
-                    }
-                }
-                
-                function check_folder_name_avaliability() {
-                    var name = $('#folder_name').val();
-                }
-                
-            </script>
             <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                     <td colspan="2">
@@ -109,15 +103,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <!--<td width="80%">-->
                     <td colspan="2">
                         <input type="text" name="folder_name" value="" id="folder_name">
                     </td>
-                    <!--
-                    <td>
-                        <button type="button" id="folder_name_check" class="check_button" onclick="check_folder_name_avaliability();">Check</button>
-                    </td>
-                    -->
                 </tr>
             </table>
         </li>
