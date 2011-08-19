@@ -25,7 +25,7 @@ if settings.USE_STATIC_SERVE:
     urlpatterns += patterns(
         '',
         
-        (r'^data/(?P<path>.*)$', 'django.views.static.serve',
+        (r'^data/(?P<path>.*)$', 'geocamUtil.views.staticServeWithExpires.staticServeWithExpires',
          {'document_root':settings.DATA_DIR,
           'show_indexes':True,
           'readOnly': True}))
