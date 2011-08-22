@@ -296,6 +296,10 @@ class Feature(models.Model):
         return dict(url=getIconUrl(self.icon + kind),
                     size=getIconSize(self.icon + kind))
 
+    def getStyledIconDict(self, kind='', suffix=''):
+        return dict(normal=self.getIconDict(kind + suffix),
+                    highlighted=self.getIconDict(kind + 'Highlighted' + suffix))
+
     def getUserDisplayName(self, user):
         if user.last_name == 'group':
             return user.first_name
@@ -332,7 +336,7 @@ class Feature(models.Model):
                     author=authorDict,
                     notes=self.notes,
                     tags=tagsList,
-                    icon=self.getIconDict(),
+                    icon=self.getStyledIconDict(),
                     localId=self.id,
                     subtype=self.__class__.__name__,
                     viewerUrl=self.getViewerUrl(),
