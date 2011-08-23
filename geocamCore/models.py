@@ -416,9 +416,10 @@ class PointFeature(Feature):
             return ''
         if self.yaw == None:
             headingStr = ''
+            relIconUrl = getIconUrl(self.icon)
         else:
             headingStr = '<heading>%s</heading>' % self.yaw
-        relIconUrl = getIconUrl(self.icon + 'Point')
+            relIconUrl = getIconUrl(self.icon + 'Point')
         iconUrl = request.build_absolute_uri(relIconUrl)
         return ("""
 <Placemark>
