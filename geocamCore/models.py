@@ -432,6 +432,9 @@ class PointFeature(Feature):
       </Icon>
       %(headingStr)s
     </IconStyle>
+    <LabelStyle>
+      <scale>0</scale>
+    </LabelStyle>
   </Style>
   <Point>
     <coordinates>%(lon)s,%(lat)s</coordinates>
