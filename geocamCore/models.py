@@ -425,6 +425,7 @@ class PointFeature(Feature):
 <Placemark>
   <name>%(name)s</name>
   <description><![CDATA[%(balloonHtml)s]]></description>
+  <styleUrl>#shareCss</styleUrl>
   <Style>
     <IconStyle>
       <Icon>

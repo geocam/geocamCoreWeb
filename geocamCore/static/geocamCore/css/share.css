@@ -71,3 +71,32 @@ ul.jd_menu {
   text-align: right;
   vertical-align: middle;
 }
+
+.geocamCaption_head {
+    font-size: 1.5em;
+    padding-top: 15px;
+}
+
+.geocamCaption_links {
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+.geocamCaption_name {
+    font-weight: bold;
+}
+
+.geocamCaption_timeShort {
+    font-weight: bold;
+    color: #000077;
+    padding-left: 10px;
+}
+
+.geocamCaption_infoTable {
+    padding-top: 5px;
+}
+
+.geocamCaption_fieldLabel {
+    text-align: right;
+    color: #888;
+}
