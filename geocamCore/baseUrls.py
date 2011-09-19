@@ -23,7 +23,7 @@ if settings.USE_STATIC_SERVE:
     urlpatterns += patterns(
         '',
         
-        (r'^media/(?P<path>.*)$', 'django.views.static.serve',
+        (r'^media/(?P<path>.*)$', 'geocamUtil.views.staticServeWithExpires.staticServeWithExpires',
          dict(document_root=settings.MEDIA_ROOT,
               show_indexes=True,
               readOnly=True)),
