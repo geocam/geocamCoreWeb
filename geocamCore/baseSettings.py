@@ -44,12 +44,18 @@ DATABASES = {
     }
 }
 
+DEFAULT_TIME_ZONE = {
+    "name": "PT",
+    "code": "US/Pacific",
+    "color": "#000",
+}
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Los_Angeles'
+TIME_ZONE = DEFAULT_TIME_ZONE['code']
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
