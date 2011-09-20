@@ -5,45 +5,27 @@
 # __END_LICENSE__
 
 import os
-import sys
-import glob
 import shutil
 import datetime
-import random
-import re
 
 import pytz
-import PIL.Image
 from django.db import models
-from django.utils.safestring import mark_safe
 from tagging.fields import TagField
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
-from django.contrib.contenttypes import generic
 import tagging
 
-from geocamUtil import anyjson as json
 from geocamUtil.models.ExtrasField import ExtrasField
 from geocamUtil.models.UuidField import UuidField
 from geocamUtil.models.managers import AbstractModelManager, FinalModelManager
-from geocamUtil.icons import ICON_URL_CACHE, getIconSize, getIconUrl
-from geocamUtil.gpx import TrackLog
-from geocamUtil.Xmp import Xmp
-from geocamUtil.TimeUtil import parseUploadTime
-from geocamUtil.FileUtil import mkdirP
+from geocamUtil.icons import getIconSize, getIconUrl
 
 from geocamCore import settings
 
-TIME_ZONES = None
-try:
-    import pytz
-except ImportError:
-    TIME_ZONES = ['US/Pacific'] # try to fail gracefully
-else:
-    TOP_TIME_ZONES = ['US/Pacific', 'US/Eastern', 'US/Central', 'US/Mountain']
-    TIME_ZONES = TOP_TIME_ZONES + [tz for tz in pytz.common_timezones if tz not in TOP_TIME_ZONES]
-TIME_ZONE_CHOICES = [(x,x) for x in TIME_ZONES]
+TOP_TIME_ZONES = ['US/Pacific', 'US/Eastern', 'US/Central', 'US/Mountain']
+TIME_ZONES = TOP_TIME_ZONES + [tz for tz in pytz.common_timezones if tz not in TOP_TIME_ZONES]
+TIME_ZONE_CHOICES = [(x, x) for x in TIME_ZONES]
 DEFAULT_TIME_ZONE = TIME_ZONES[0]
 
 PERM_VIEW = 0
@@ -75,9 +57,9 @@ ALTITUDE_REF_LOOKUP = dict(ALTITUDE_REF_CHOICES)
 ALTITUDE_REF_LOOKUP[''] = None
 DEFAULT_ALTITUDE_REF = ALTITUDE_REF_CHOICES[0][0]
 
-STATUS_CHOICES = (('p', 'pending'), # in db but not fully processed yet
-                  ('a', 'active'),  # active, display this to user
-                  ('d', 'deleted'), # deleted but not purged yet
+STATUS_CHOICES = (('p', 'pending'),  # in db but not fully processed yet
+                  ('a', 'active'),   # active, display this to user
+                  ('d', 'deleted'),  # deleted but not purged yet
                   )
 # define constants like STATUS_PENDING based on above choices
 for code, label in STATUS_CHOICES:
@@ -94,8 +76,10 @@ WORKFLOW_STATUS_CHOICES = ((WF_NEEDS_EDITS, 'Needs edits'),
                            )
 DEFAULT_WORKFLOW_STATUS = WF_SUBMITTED_FOR_VALIDATION
 
+
 class EmptyTrackError(Exception):
     pass
+
 
 class Folder(models.Model):
     """Every piece of data in Share belongs to a folder which records both the
@@ -121,14 +105,17 @@ class Folder(models.Model):
             name = '[untitled]'
         return '%s id=%d' % (name, self.id)
 
+
 class Permission(models.Model):
     folder = models.ForeignKey(Folder, default=1)
     accessType = models.PositiveIntegerField(choices=PERMISSION_CHOICES)
+
 
 class Unit(models.Model):
     folder = models.ForeignKey(Folder, default=1)
     name = models.CharField(max_length=80)
     permissions = models.ManyToManyField(Permission)
+
 
 class AbstractOperation(models.Model):
     """Represents an area where a team is operating.  Could be a regular
@@ -143,10 +130,10 @@ class AbstractOperation(models.Model):
                                    help_text="A formal id for this operation.  For incidents, use the incident number.  Example: 'PA-DEWA-0001'")
     minTime = models.DateTimeField(blank=True, null=True, verbose_name='start date')
     maxTime = models.DateTimeField(blank=True, null=True, verbose_name='end date')
-    minLat = models.FloatField(blank=True, null=True, verbose_name='minimum latitude') # WGS84 degrees
-    minLon = models.FloatField(blank=True, null=True, verbose_name='minimum longitude') # WGS84 degrees
-    maxLat = models.FloatField(blank=True, null=True, verbose_name='maximum latitude') # WGS84 degrees
-    maxLon = models.FloatField(blank=True, null=True, verbose_name='maximum longitude') # WGS84 degrees
+    minLat = models.FloatField(blank=True, null=True, verbose_name='minimum latitude')  # WGS84 degrees
+    minLon = models.FloatField(blank=True, null=True, verbose_name='minimum longitude')  # WGS84 degrees
+    maxLat = models.FloatField(blank=True, null=True, verbose_name='maximum latitude')  # WGS84 degrees
+    maxLon = models.FloatField(blank=True, null=True, verbose_name='maximum longitude')  # WGS84 degrees
     notes = models.TextField(blank=True)
     tags = TagField(blank=True)
     contentType = models.ForeignKey(ContentType, editable=False, null=True)
@@ -160,8 +147,10 @@ class AbstractOperation(models.Model):
     def __unicode__(self):
         return '%s %s %s' % (self.__class__.__name__, self.name, self.operationId)
 
+
 class Operation(AbstractOperation):
     objects = FinalModelManager(parentModel=AbstractOperation)
+
 
 class Assignment(models.Model):
     folder = models.ForeignKey(Folder)
@@ -169,6 +158,7 @@ class Assignment(models.Model):
                              help_text='The unit you are assigned to.')
     title = models.CharField(max_length=64, blank=True, help_text="Your title within unit.  Example: 'Sit Unit Leader'")
     uuid = UuidField()
+
 
 class UserProfile(models.Model):
     """Adds some extended fields to the django built-in User type."""
@@ -193,6 +183,7 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return u'<User %s "%s %s">' % (self.user.username, self.user.first_name, self.user.last_name)
 
+
 class Sensor(models.Model):
     name = models.CharField(max_length=40, blank=True,
                             help_text='Your name for the instrument. Example: "MicroImager" or "GeoCam"')
@@ -212,6 +203,7 @@ class Sensor(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class Feature(models.Model):
     folder = models.ForeignKey(Folder, default=1)
@@ -238,6 +230,7 @@ class Feature(models.Model):
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
     objects = AbstractModelManager(parentModel=None)
+    viewerExtension = None  # override in derived classes
 
     class Meta:
         abstract = True
@@ -270,23 +263,17 @@ class Feature(models.Model):
         dtLocal = dtUtc.astimezone(localTz)
         return dtLocal
 
-    def hasPosition(self):
-        return self.minLat != None
-
     def getAuthor(self):
         pass
 
     def __unicode__(self):
-        return '%s %d %s %s %s %s' % (self.__class__.__name__, self.id, self.name or '[untitled]', self.timestamp.strftime('%Y-%m-%d'), self.author.username, self.uuid)
-
-    def getDateText(self):
-        return self.utcToLocalTime(self.timestamp).strftime('%Y%m%d')
+        return '%s %d %s %s %s' % (self.__class__.__name__, self.id, self.name or '[untitled]', self.author.username, self.uuid)
 
     def getDirSuffix(self, version=None):
         if version == None:
             version = self.version
         idStr = str(self.id) + 'p'
-        idList = [idStr[i:(i+2)] for i in xrange(0, len(idStr), 2)]
+        idList = [idStr[i:(i + 2)] for i in xrange(0, len(idStr), 2)]
         return [self.__class__.__name__.lower()] + idList + [str(version)]
 
     def getDir(self, version=None):
@@ -306,7 +293,6 @@ class Feature(models.Model):
         else:
             return '%s %s' % (user.first_name.capitalize(),
                               user.last_name.capitalize())
-            return result
 
     def getViewerUrl(self):
         name = self.name or 'untitled' + self.viewerExtension
@@ -348,6 +334,9 @@ class Feature(models.Model):
                      for k, v in d.iteritems()
                      if v not in (None, '')))
 
+    def getGeometry(self):
+        return None  # override in derived classes
+
     def getGeoJson(self):
         return dict(type='Feature',
                     id=self.uuid,
@@ -356,6 +345,7 @@ class Feature(models.Model):
 
     def getDirUrl(self):
         return '/'.join([settings.DATA_URL] + list(self.getDirSuffix()))
+
 
 class Change(models.Model):
     """The concept workflow is like this: there are two roles involved,
@@ -382,16 +372,18 @@ class Change(models.Model):
                                                  default=DEFAULT_WORKFLOW_STATUS)
     uuid = UuidField()
 
+
 class PointFeature(Feature):
-    latitude = models.FloatField(blank=True, null=True) # WGS84 degrees
-    longitude = models.FloatField(blank=True, null=True) # WGS84 degrees
+    latitude = models.FloatField(blank=True, null=True)  # WGS84 degrees
+    longitude = models.FloatField(blank=True, null=True)  # WGS84 degrees
     altitude = models.FloatField(blank=True, null=True)
     altitudeRef = models.CharField(blank=True, max_length=1,
                                    choices=ALTITUDE_REF_CHOICES, default=DEFAULT_ALTITUDE_REF,
                                    verbose_name='Altitude ref.')
     timestamp = models.DateTimeField(blank=True)
     objects = AbstractModelManager(parentModel=Feature)
-    
+    yaw = None  # override in derived classes
+
     class Meta:
         abstract = True
         ordering = ['-timestamp']
@@ -447,7 +439,7 @@ class PointFeature(Feature):
            headingStr=headingStr,
            lon=self.longitude,
            lat=self.latitude))
-    
+
     def getProperties(self):
         result = super(PointFeature, self).getProperties()
         result.update(timestamp=self.localTime.isoformat(),
@@ -460,13 +452,14 @@ class PointFeature(Feature):
         return dict(type='Point',
                     coordinates=[self.longitude, self.latitude])
 
+
 class ExtentFeature(Feature):
     minTime = models.DateTimeField(blank=True, verbose_name='start time')
     maxTime = models.DateTimeField(blank=True, verbose_name='end time')
-    minLat = models.FloatField(blank=True, null=True, verbose_name='minimum latitude') # WGS84 degrees
-    minLon = models.FloatField(blank=True, null=True, verbose_name='minimum longitude') # WGS84 degrees
-    maxLat = models.FloatField(blank=True, null=True, verbose_name='maximum latitude') # WGS84 degrees
-    maxLon = models.FloatField(blank=True, null=True, verbose_name='maximum longitude') # WGS84 degrees
+    minLat = models.FloatField(blank=True, null=True, verbose_name='minimum latitude')  # WGS84 degrees
+    minLon = models.FloatField(blank=True, null=True, verbose_name='minimum longitude')  # WGS84 degrees
+    maxLat = models.FloatField(blank=True, null=True, verbose_name='maximum latitude')  # WGS84 degrees
+    maxLon = models.FloatField(blank=True, null=True, verbose_name='maximum longitude')  # WGS84 degrees
     objects = AbstractModelManager(parentModel=Feature)
 
     def save(self, **kwargs):

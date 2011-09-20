@@ -5,9 +5,7 @@
 # __END_LICENSE__
 
 import os
-import re
 import sys
-from glob import glob
 
 from geocamUtil.management.commandUtil import getSiteDir
 
@@ -134,7 +132,7 @@ LOGIN_URL = SCRIPT_NAME + 'accounts/login/'
 CACHE_BACKEND = 'locmem://?timeout=30'
 
 # time out sessions after 30 minutes of inactivity
-SESSION_COOKIE_AGE = 30*60
+SESSION_COOKIE_AGE = 30 * 60
 SESSION_SAVE_EVERY_REQUEST = True
 
 ######################################################################

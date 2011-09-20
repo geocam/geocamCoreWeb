@@ -4,7 +4,7 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns
 
 from geocamCore import settings
 
@@ -13,7 +13,7 @@ urlpatterns = patterns(
 
     # accounts
     (r'^accounts/login/$', 'django.contrib.auth.views.login',
-     {'loginRequired': False, # avoid redirect loop
+     {'loginRequired': False,  # avoid redirect loop
       }),
     (r'^accounts/logout/$', 'django.contrib.auth.views.logout',
      # show logout page instead of redirecting to log in again
@@ -24,8 +24,8 @@ urlpatterns = patterns(
 if settings.USE_STATIC_SERVE:
     urlpatterns += patterns(
         '',
-        
+
         (r'^data/(?P<path>.*)$', 'geocamUtil.views.staticServeWithExpires.staticServeWithExpires',
-         {'document_root':settings.DATA_DIR,
-          'show_indexes':True,
+         {'document_root': settings.DATA_DIR,
+          'show_indexes': True,
           'readOnly': True}))

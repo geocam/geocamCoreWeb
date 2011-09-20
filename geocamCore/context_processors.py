@@ -5,5 +5,7 @@
 # __END_LICENSE__
 
 from django.conf import settings as settings_
+
+
 def settings(request):
-    return dict(settings = settings_)
+    return dict(settings=settings_)

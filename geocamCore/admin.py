@@ -4,6 +4,9 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+# tell pylint wildcard import is ok
+# pylint: disable-msg=W0401
+
 from django.contrib import admin
 
 from geocamCore.models import *

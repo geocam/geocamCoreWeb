@@ -4,7 +4,7 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, include
 from django.contrib import admin
 
 from geocamCore import settings
@@ -13,7 +13,7 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     '',
-    
+
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^comments/', include('django.contrib.comments.urls')),
@@ -22,7 +22,7 @@ urlpatterns = patterns(
 if settings.USE_STATIC_SERVE:
     urlpatterns += patterns(
         '',
-        
+
         (r'^media/(?P<path>.*)$', 'geocamUtil.views.staticServeWithExpires.staticServeWithExpires',
          dict(document_root=settings.MEDIA_ROOT,
               show_indexes=True,
