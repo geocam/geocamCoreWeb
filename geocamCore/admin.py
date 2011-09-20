@@ -5,7 +5,7 @@
 # __END_LICENSE__
 
 # tell pylint wildcard import is ok
-# pylint: disable-msg=W0401
+# pylint: disable=W0401
 
 from django.contrib import admin
 
