@@ -11,17 +11,21 @@ import datetime
 import pytz
 from django.db import models
 from tagging.fields import TagField
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User, Group
 from django.core.cache import cache
+from django.db.models.signals import post_save
 import tagging
 
+from geocamFolder.models import Folder
 from geocamUtil.models.ExtrasField import ExtrasField
 from geocamUtil.models.UuidField import UuidField
 from geocamUtil.models.managers import AbstractModelManager, FinalModelManager
 from geocamUtil.icons import getIconSize, getIconUrl
 
 from geocamCore import settings
+
+# disable bogus pylint warnings about missing members in hashlib
+# pylint: disable=E1101
 
 TOP_TIME_ZONES = ['US/Pacific', 'US/Eastern', 'US/Central', 'US/Mountain']
 TIME_ZONES = TOP_TIME_ZONES + [tz for tz in pytz.common_timezones if tz not in TOP_TIME_ZONES]
@@ -81,49 +85,13 @@ class EmptyTrackError(Exception):
     pass
 
 
-class Folder(models.Model):
-    """Every piece of data in Share belongs to a folder which records both the
-    operation the data is associated with and who should be able to access it."""
-    name = models.CharField(max_length=32)
-    operation = models.ForeignKey("Operation", blank=True, null=True,
-                                  related_name='activeOperation',
-                                  help_text='Operation that gathered the data in this folder, if applicable.  (Once a folder has an operation and contains data, it should not be switched to a new operation; create a new folder instead.)')
-    timeZone = models.CharField(max_length=32,
-                                choices=TIME_ZONE_CHOICES,
-                                default=DEFAULT_TIME_ZONE,
-                                help_text="Time zone used to display timestamps on data in this folder.")
-    isArchive = models.BooleanField(default=False,
-                                    help_text='If true, disable editing data in this folder.')
-    notes = models.TextField(blank=True)
-    uuid = UuidField()
-    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
-
-    def __unicode__(self):
-        if self.name:
-            name = self.name
-        else:
-            name = '[untitled]'
-        return '%s id=%d' % (name, self.id)
-
-
-class Permission(models.Model):
-    folder = models.ForeignKey(Folder, default=1)
-    accessType = models.PositiveIntegerField(choices=PERMISSION_CHOICES)
-
-
-class Unit(models.Model):
-    folder = models.ForeignKey(Folder, default=1)
-    name = models.CharField(max_length=80)
-    permissions = models.ManyToManyField(Permission)
-
-
 class AbstractOperation(models.Model):
     """Represents an area where a team is operating.  Could be a regular
     station posting, an incident, an exercise, or whatever makes sense.
     For a discussion of incident file naming conventions see
     http://gis.nwcg.gov/2008_GISS_Resource/student_workbook/unit_lessons/Unit_08_File_Naming_Review.pdf"""
 
-    folder = models.ForeignKey(Folder, related_name='%(app_label)s_%(class)s_owningFolder', default=1)
+    folders = models.ManyToManyField(Folder, related_name='%(app_label)s_%(class)s_folders', default=[1])
     name = models.CharField(max_length=32, blank=True,
                             help_text="A descriptive name for this operation.  Example: 'beaver_pond'.")
     operationId = models.CharField(max_length=32, blank=True, verbose_name='operation id',
@@ -136,7 +104,6 @@ class AbstractOperation(models.Model):
     maxLon = models.FloatField(blank=True, null=True, verbose_name='maximum longitude')  # WGS84 degrees
     notes = models.TextField(blank=True)
     tags = TagField(blank=True)
-    contentType = models.ForeignKey(ContentType, editable=False, null=True)
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
     objects = AbstractModelManager(parentModel=None)
@@ -153,27 +120,113 @@ class Operation(AbstractOperation):
 
 
 class Assignment(models.Model):
-    folder = models.ForeignKey(Folder)
-    unit = models.ForeignKey(Unit,
-                             help_text='The unit you are assigned to.')
-    title = models.CharField(max_length=64, blank=True, help_text="Your title within unit.  Example: 'Sit Unit Leader'")
+    operation = models.ForeignKey(Operation)
+    userProfile = models.ForeignKey('UserProfile')
+    organization = models.CharField(max_length=64, blank=True, help_text="The organization or unit you are assigned to for this operation.")
+    jobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title for this operation.")
+    contactInfo = models.CharField(max_length=128, blank=True, help_text="Your contact info for this operation. Cell phone number is most important.")
     uuid = UuidField()
+    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+
+
+class Context(models.Model):
+    """
+    A context is a collection of settings that it makes sense to share
+    between members of a group or people on an incident.
+    """
+    name = models.CharField(max_length=40,
+                            help_text="A descriptive name.")
+    uploadFolder = models.ForeignKey(Folder,
+                                     related_name='%(app_label)s_%(class)s_uploadingContextSet',
+                                     help_text="Folder to upload data to.")
+    timeZone = models.CharField(max_length=32,
+                                choices=TIME_ZONE_CHOICES,
+                                default=DEFAULT_TIME_ZONE,
+                                help_text="Time zone used to display timestamps and to interpret incoming timestamps that aren't labeled with a time zone.")
+    layerConfigUrl = models.CharField(max_length=256,
+                                      help_text='URL pointing to a JSON config file specifying what layers to show')
+    uuid = UuidField()
+    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+
+
+class GroupProfile(models.Model):
+    group = models.OneToOneField(Group, help_text='Reference to corresponding Group object of built-in Django authentication system.')
+    context = models.ForeignKey(Context, blank=True, null=True,
+                                help_text='Default context associated with this group.')
+
+    password = models.CharField(max_length=128, blank=True, null=True)
+
+    uuid = UuidField()
+    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+
+    def password_required(self):
+        return (self.password == None)
+
+    def set_password(self, raw_password):
+        # Make sure the password field isn't set to none
+        if raw_password != None:
+            import hashlib
+            import random
+
+            # Compute the differnt parts we'll need to secure store the password
+            algo = 'sha1'
+            salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+            hsh = hashlib.sha1(salt + raw_password).hexdigest()
+
+            # Set the password value
+            self.password = '%s$%s$%s' % (algo, salt, hsh)
+
+    def authenticate(self, user_password):
+        # Make sure the password field isn't set to none
+        if self.password != None:
+            import hashlib
+
+            # Get the parts of the group password
+            parts = self.password.split('$')
+            _algo, salt, hsh = parts[:2]
+
+            # Compute the hash of the user password
+            #user_hsh = get_hexdigest(algo, salt, user_password)
+            user_hash = hashlib.sha1(salt + user_password).hexdigest()
+
+            # Retrun the resulting comparison
+            return (hsh == user_hash)
+
+        else:
+            return True
+
+
+class GroupInvite(models.Model):
+    # Model References
+    group = models.ForeignKey(Group, help_text='Reference to correspond Group object of built-in Django authentication system')
+    user = models.ForeignKey(User, blank=True, null=True, help_text='Reference to corresponding User object of built-in Django authentication system')
+
+    # Email tracking data
+    email = models.CharField(max_length=128, help_text='Email address that this invite was sent to')
+    sentSuccessfully = models.BooleanField(default=True, help_text='Flag to indicate weither or not this invite was sent succesfully')
+
+    # Conversion tracking data
+    passwordRequired = models.BooleanField(default=False, help_text='Flag to indicate if this invite requires a password to join the group')
+    existingUser = models.BooleanField(default=False, help_text='Flag to indicate if this email address this was sent to already has a user account associated with it')
+    hasBeenRedeemed = models.BooleanField(default=False, help_text='Flag to indicate if this invite has been succesfully redeemed yet')
+    conversion = models.BooleanField(default=False, help_text='Flag to indicate if a new user joined as a result of this invite')
+
+    # Date and time stamps
+    sentTime = models.DateTimeField(auto_now=True, help_text='Date and time that this invite was sent')
+    redeemedTime = models.DateTimeField(blank=True, null=True, help_text='Date and time that this invite was succesfully redeemed')
 
 
 class UserProfile(models.Model):
-    """Adds some extended fields to the django built-in User type."""
+    """
+    Adds some extended fields to the django built-in User type.
+    """
     user = models.OneToOneField(User, help_text='Reference to corresponding User object of built-in Django authentication system.')
     displayName = models.CharField(max_length=40, blank=True,
                                    help_text="The 'uploaded by' name that will appear next to data you upload.  Defaults to 'F. Last', but if other members of your unit use your account you might want to show your unit name instead.")
-    contactInfo = models.CharField(max_length=128, blank=True,
-                                   help_text="Your contact info.  If at an incident, we suggest listing cell number and email address.")
-    # user's overall folder permissions are the union of userPermissions and
-    # the permissions granted to units the user is posted to.  if user has 'admin'
-    # privileges to any folder, they can also create new folders.
-    userPermissions = models.ManyToManyField(Permission)
-    assignments = models.ManyToManyField(Assignment)
-    homeOrganization = models.CharField(max_length=64, blank=True, help_text="The organization you normally work for.")
-    homeTitle = models.CharField(max_length=64, blank=True, help_text="Your normal job title.")
+    homeOrganization = models.CharField(max_length=64, blank=True, help_text="The home organization you usually work for.")
+    homeJobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title in your home organization.")
+    contactInfo = models.CharField(max_length=128, blank=True, help_text="Your contact info in your home organization.")
+    operations = models.ManyToManyField(Operation, through=Assignment)
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
@@ -347,32 +400,6 @@ class Feature(models.Model):
         return '/'.join([settings.DATA_URL] + list(self.getDirSuffix()))
 
 
-class Change(models.Model):
-    """The concept workflow is like this: there are two roles involved,
-    the author (the person who collected the data and who knows it best)
-    and validators (who are responsible for signing off on it before it
-    is considered 'valid' by the rest of the team).  When the author
-    uploads new data, it is marked 'submitted for validation', so it
-    appears in the queue of things to be validated.  Any validator
-    examining the queue has three choices with each piece of data: she
-    can mark it 'valid' (publishing it to the team), 'needs edits'
-    (putting it on the author's queue to be fixed), or
-    'rejected' (indicating it's not worth fixing, and hiding it to avoid
-    confusion).  If the author fixes something on his queue to be fixed,
-    he can then submit it to be validated again.  if the author notices
-    a problem with the data after it is marked 'valid', he can change
-    its status back to 'needs author fixes', edit, and then resubmit.
-    Each status change in the workflow is recorded as a Change object."""
-    timestamp = models.DateTimeField()
-    featureUuid = models.CharField(max_length=48)
-    user = models.ForeignKey(User)
-    action = models.CharField(max_length=40, blank=True,
-                              help_text='Brief human-readable description like "upload" or "validation check"')
-    workflowStatus = models.PositiveIntegerField(choices=WORKFLOW_STATUS_CHOICES,
-                                                 default=DEFAULT_WORKFLOW_STATUS)
-    uuid = UuidField()
-
-
 class PointFeature(Feature):
     latitude = models.FloatField(blank=True, null=True)  # WGS84 degrees
     longitude = models.FloatField(blank=True, null=True)  # WGS84 degrees
@@ -482,3 +509,16 @@ class ExtentFeature(Feature):
     class Meta:
         abstract = True
         ordering = ['-maxTime']
+
+
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)
+
+def create_group_profile(sender, instance, created, **kwargs):
+    if created:
+        GroupProfile.objects.create(group=instance)
+
+post_save.connect(create_group_profile, sender=Group)
