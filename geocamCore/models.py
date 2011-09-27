@@ -91,7 +91,7 @@ class AbstractOperation(models.Model):
     For a discussion of incident file naming conventions see
     http://gis.nwcg.gov/2008_GISS_Resource/student_workbook/unit_lessons/Unit_08_File_Naming_Review.pdf"""
 
-    folders = models.ManyToManyField(Folder, related_name='%(app_label)s_%(class)s_folders', default=[1])
+    folders = models.ManyToManyField(Folder, related_name='%(app_label)s_%(class)s_folders')
     name = models.CharField(max_length=32, blank=True,
                             help_text="A descriptive name for this operation.  Example: 'beaver_pond'.")
     operationId = models.CharField(max_length=32, blank=True, verbose_name='operation id',
@@ -259,7 +259,7 @@ class Sensor(models.Model):
 
 
 class Feature(models.Model):
-    folder = models.ForeignKey(Folder, default=1)
+    folders = models.ManyToManyField(Folder)
     name = models.CharField(max_length=80, blank=True, default='')
     author = models.ForeignKey(User, null=True, related_name='%(app_label)s_%(class)s_authoredSet',
                                help_text='The user who collected the data (when you upload data, Share tags you as the author)')
@@ -312,7 +312,8 @@ class Feature(models.Model):
 
     def utcToLocalTime(self, dtUtc0):
         dtUtc = pytz.utc.localize(dtUtc0)
-        localTz = pytz.timezone(self.getCachedFolder().timeZone)
+        # TODO: respect user's context time zone
+        localTz = pytz.timezone(settings.TIME_ZONE)
         dtLocal = dtUtc.astimezone(localTz)
         return dtLocal
 
@@ -516,6 +517,7 @@ def create_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.create(user=instance)
 
 post_save.connect(create_user_profile, sender=User)
+
 
 def create_group_profile(sender, instance, created, **kwargs):
     if created:

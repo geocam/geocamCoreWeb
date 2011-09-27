@@ -1,13 +1,18 @@
 #!/usr/bin/python
 
 import os
-import uuid
 import datetime
 
 from django.db import connection, transaction
 from django.conf import settings
+from django.contrib.auth.models import Group
 
-from geocamTrack.models import Track, Resource, IconStyle, LineStyle
+from geocamFolder.models import Folder, Actions
+
+from geocamCore.models import Context
+
+# disable bogus warnings about missing class members
+# pylint: disable=E1101
 
 
 def dosys(cmd, stopOnError=False):
@@ -21,133 +26,68 @@ def dosys(cmd, stopOnError=False):
 
 
 @transaction.commit_manually
-def renameCoreTables():
-    cursor = connection.cursor()
-    coreTables = ['assignment',
-                  'change',
-                  'folder',
-                  'googleearthsession',
-                  'operation',
-                  'permission',
-                  'sensor',
-                  'snapshot',
-                  'track',
-                  'unit',
-                  'unit_permissions',
-                  'userprofile',
-                  'userprofile_assignments',
-                  'userprofile_userPermissions']
-    for t in coreTables:
-        cursor.execute("RENAME TABLE `shareCore_%s` TO `geocamCore_%s`" % (t, t))
-        transaction.commit()
-
-
-@transaction.commit_manually
-def renamePhotoTable():
-    cursor = connection.cursor()
-    cursor.execute("RENAME TABLE `shareGeocam_photo` TO `geocamLens_photo`")
-    transaction.commit()
-
-
-@transaction.commit_manually
-def renameTrackTables():
-    cursor = connection.cursor()
-    renameTables = ['resource',
-                    'resourceposition',
-                    'pastresourceposition']
-    for t in renameTables:
-        cursor.execute("RENAME TABLE `shareTracking_%s` TO `geocamTrack_%s`" % (t, t))
-        transaction.commit()
-
-    # add new fields
-    alterTables = ['resourceposition',
-                   'pastresourceposition']
-    fields = ["`track_id` int(11) DEFAULT NULL",
-              "`heading` double DEFAULT NULL",
-              "`precisionMeters` double DEFAULT NULL",
-              "`uuid` varchar(48) NOT NULL"]
-    for t in alterTables:
-        for field in fields:
-            cursor.execute("ALTER TABLE `geocamTrack_%s` ADD COLUMN %s" % (t, field))
-            transaction.commit()
-
-    cursor.execute("ALTER TABLE `geocamTrack_resource` ADD COLUMN `extras` longtext NOT NULL")
-    transaction.commit()
-
-
-@transaction.commit_manually
-def renameLatitudeTable():
-    cursor = connection.cursor()
-    cursor.execute("RENAME TABLE `shareLatitude_latitudeprofile` TO `geocamTrack_latitudeprofile`")
-    transaction.commit()
-
-
-@transaction.commit_manually
-def addTracks():
-    # create a Track object for each Resource
-    resources = Resource.objects.all()
-    iconStyle = IconStyle.objects.get(name='default')
-    lineStyle = LineStyle.objects.get(name='default')
-    trackLookup = {}
-    for r in resources:
-        t = Track(name=r.user.username,
-                  resource=r,
-                  iconStyle=iconStyle,
-                  lineStyle=lineStyle)
-        t.save()
-        trackLookup[r.id] = t.id
-    transaction.commit()
-
-    # find the Track corresponding to each Resource and fill it in where
-    # needed
-    tables = ['geocamTrack_resourceposition',
-              'geocamTrack_pastresourceposition']
-    cursor = connection.cursor()
-    for t in tables:
-        cursor.execute('SELECT `id`, `resource_id` FROM `%s`' % t)
-        args = [(trackLookup[resource_id], str(uuid.uuid4()), pk)
-                for pk, resource_id in cursor.fetchall()]
-        cursor.executemany("UPDATE `%s` SET `track_id` = %%s, `uuid` = %%s WHERE `id` = %%s" % t,
-                           args)
-        transaction.commit()
-
-    # mark the track field not null and delete the resource field
-    for t in tables:
-        cursor.execute('ALTER TABLE `%s` MODIFY `track_id` int(11) NOT NULL' % t)
-        cursor.execute('ALTER TABLE `%s` DROP COLUMN `resource_id`' % t)
-    transaction.commit()
-
-
-def fixResourceUsers():
-    cursor = connection.cursor()
-    cursor.execute("ALTER TABLE `geocamTrack_resource` ADD COLUMN `user_id` int(11) NOT NULL")
-    transaction.commit()
-
-    cursor.execute("UPDATE `geocamTrack_resource`, `auth_user` SET `geocamTrack_resource`.`user_id` = `auth_user`.`id` WHERE `geocamTrack_resource`.`userName` = `auth_user`.`username`")
-    transaction.commit()
-
-    cursor.execute('ALTER TABLE `geocamTrack_resource` DROP COLUMN `userName`')
-    cursor.execute('ALTER TABLE `geocamTrack_resource` DROP COLUMN `displayName`')
-    transaction.commit()
-
-
-@transaction.commit_manually
 def migrate(opts):
     # back up the database before migrating
-    db = settings.DATABASES['default']
-    dbName = db['NAME']
-    timeText = datetime.datetime.now().strftime('%Y_%m_%d_%H%M%S')
-    dumpFile = '%s_%s_migrate.sql' % (timeText, dbName)
-    cmd = ('mysqldump --user="%s" --password="%s" %s > %s'
-           % (db['USER'], db['PASSWORD'], dbName, dumpFile))
-    dosys(cmd, stopOnError=True)
+    if not opts.nodump:
+        db = settings.DATABASES['default']
+        dbName = db['NAME']
+        timeText = datetime.datetime.now().strftime('%Y_%m_%d_%H%M%S')
+        dumpFile = '%s_%s_migrate.sql' % (timeText, dbName)
+        cmd = ('mysqldump --user="%s" --password="%s" %s > %s'
+               % (db['USER'], db['PASSWORD'], dbName, dumpFile))
+        dosys(cmd, stopOnError=True)
 
     cursor = connection.cursor()
-    os.system('%s/manage.py syncdb' % settings.CHECKOUT_DIR)
 
-    # for each folder, make a Folder, Group, and Context
-    cursor.execute('SELECT `name`, `timeZone` FROM `geocamCore_folder`')
-    for name, timeZone in cursor.fetchall():
+    # drop tables with no data
+    noDataTables = ('geocamCore_assignment',
+                    'geocamCore_permission',
+                    'geocamCore_unit',
+                    'geocamCore_change',
+                    'geocamCore_operation')
+    for table in noDataTables:
+        cursor.execute('DROP TABLE `%s`' % table)
+    transaction.commit()
+
+    # create tables
+    dosys('%s/manage.py syncdb --noinput' % settings.CHECKOUT_DIR)
+
+    # change UserProfile column definitions
+    cursor.execute('ALTER TABLE `geocamCore_userprofile` CHANGE COLUMN `homeTitle` `homeJobTitle` varchar(64) NOT NULL')
+    # syncdb will do the following for us since ManyToManyFields are
+    # stored in separate tables:
+    #   drop: userPermissions, assignments
+    #   add: operations
+    transaction.commit()
+
+    # change Track column definitions
+    cursor.execute('ALTER TABLE `geocamTrack_track` CHANGE COLUMN `name` `name` varchar(80) NOT NULL')
+    newColumns = ('`author_id` integer',
+                  '`sensor_id` integer',
+                  '`isAerial` bool NOT NULL',
+                  '`notes` longtext NOT NULL',
+                  '`tags` varchar(255) NOT NULL',
+                  '`icon` varchar(16) NOT NULL',
+                  '`status` varchar(1) NOT NULL',
+                  '`processed` bool NOT NULL',
+                  '`version` integer UNSIGNED NOT NULL',
+                  '`purgeTime` datetime',
+                  '`workflowStatus` integer UNSIGNED NOT NULL',
+                  '`mtime` datetime',
+                  '`minTime` datetime NOT NULL',
+                  '`maxTime` datetime NOT NULL',
+                  '`minLat` double precision',
+                  '`minLon` double precision',
+                  '`maxLat` double precision',
+                  '`maxLon` double precision')
+    for col in newColumns:
+        cursor.execute('ALTER TABLE `geocamTrack_track` ADD COLUMN %s' % col)
+    transaction.commit()
+
+    # for each old folder, make a Folder, Group, and Context
+    cursor.execute('SELECT `id`, `name`, `timeZone` FROM `geocamCore_folder`')
+    newFolderLookup = {}
+    for oldFolderId, name, timeZone in cursor.fetchall():
         g = Group(name=name)
         g.save()
         transaction.commit()
@@ -157,32 +97,71 @@ def migrate(opts):
         f.save()
         transaction.commit()
 
-        f.setPermissions(g, ACTIONS.ALL)
+        f.setPermissions(g, Actions.ALL)
         transaction.commit()
 
-        c = Context(name=name, timeZone=timeZone)
+        c = Context(name=name,
+                    uploadFolder=f,
+                    timeZone=timeZone)
         c.save()
         transaction.commit()
 
-        gp = g.group_profile_set.get()
+        gp = g.groupprofile
         gp.context = c
         gp.save()
         transaction.commit()
 
-    # drop tables
-    cursor.execute('DROP TABLE `geocamCore_folder`')
-    cursor.execute('DROP TABLE `geocamCore_permission`')
-    cursor.execute('DROP TABLE `geocamCore_unit`')
-    cursor.execute('DROP TABLE `geocamCore_assignment`')
-    cursor.execute('DROP TABLE `geocamCore_change`')
+        newFolderLookup[oldFolderId] = f
+
+    # syncdb should create these tables (according to sqlall) but
+    # doesn't for some reason
+    cursor.execute("""
+    CREATE TABLE `geocamLens_photo_folders` (
+        `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+        `photo_id` integer NOT NULL,
+        `folder_id` integer NOT NULL,
+        UNIQUE (`photo_id`, `folder_id`)
+    )
+    """)
     transaction.commit()
+
+    cursor.execute("""
+    CREATE TABLE `geocamTrack_track_folders` (
+        `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+        `track_id` integer NOT NULL,
+        `folder_id` integer NOT NULL,
+        UNIQUE (`track_id`, `folder_id`)
+    )
+    """)
+    transaction.commit()
+
+    # fill in new 'folders' field
+    folderTables = ('geocamLens_photo',)
+    for table in folderTables:
+        modelName = table.split('_')[1]
+        cursor.execute('SELECT `id`, `folder_id` FROM `%s`' % table)
+        for objId, oldFolderId in cursor.fetchall():
+            newFolderId = newFolderLookup[oldFolderId].id
+            cursor.execute('INSERT INTO `%s_folders` (`%s_id`, `folder_id`) VALUES (%d, %d)'
+                           % (table, modelName, objId, newFolderId))
+        transaction.commit()
+
+    # drop old 'folder' field
+    for table in folderTables:
+        cursor.execute('ALTER TABLE `%s` DROP COLUMN `folder_id`' % table)
+        transaction.commit()
+
+    # drop remaining obsolete tables
+    cursor.execute('DROP TABLE `geocamCore_folder`')
+    transaction.commit()
+
 
 def main():
     import optparse
     parser = optparse.OptionParser('usage: %prog')
-    parser.add_option('--production',
+    parser.add_option('--nodump',
                       action='store_true', default=False,
-                      help='Use different migration for production db')
+                      help='Do not dump the database before we start')
     opts, _args = parser.parse_args()
     migrate(opts)
 
