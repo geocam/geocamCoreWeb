@@ -100,3 +100,8 @@ ul.jd_menu {
     text-align: right;
     color: #888;
 }
+
+.geocamLayerRow {
+    font-size: 1.4em;
+    margin: 5px;
+}
