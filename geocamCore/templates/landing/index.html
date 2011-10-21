@@ -1,4 +1,5 @@
 {% extends "base2.html" %}
+{% load geocamAuth %}
 
 {% block popupmenu %}
 
@@ -19,7 +20,7 @@
     <tr><td>&nbsp;</td></tr>
     <tr>
         <td>
-            <a href="/accounts/register/" class="big_awesome_button">Sign up to start sharing map data: it's free!</a>
+            <a href="{% password_url register %}" class="big_awesome_button">Sign up to start sharing map data. It's free!</a>
         </td>
     </tr>
     <tr><td>&nbsp;</td></tr>
@@ -32,7 +33,7 @@
     <tr>
         <td>
         <h1 class="geocam_table_title">Registered users - log in</h1>
-        <form id="geocam_login_form" method="post" action="{% url geocamCore_login %}?next={% url home %}">
+        <form id="geocam_login_form" method="post" action="{% password_url geocamCore_login %}&next={% url home %}">
             {% csrf_token %}
             <table>
               {{ authenticationForm.as_table }}

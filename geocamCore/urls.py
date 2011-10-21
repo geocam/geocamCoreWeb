@@ -14,7 +14,8 @@ urlpatterns = patterns(
 
     url(r'^$', views.index, {'loginRequired': False}),
 
-    url(r'^accounts/register/$', views.register, {'loginRequired': False}),
+    url(r'^accounts/register/$', views.register, {'loginRequired': False},
+        name='register'),
 
     # accounts
     url(r'^accounts/login/$', 'django.contrib.auth.views.login',
