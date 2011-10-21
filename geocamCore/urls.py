@@ -14,6 +14,8 @@ urlpatterns = patterns(
 
     url(r'^$', views.index, {'loginRequired': False}),
 
+    url(r'^accounts/register/$', views.register, {'loginRequired': False}),
+
     # accounts
     url(r'^accounts/login/$', 'django.contrib.auth.views.login',
         {'loginRequired': False,  # avoid redirect loop

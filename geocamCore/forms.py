@@ -92,10 +92,11 @@ class ExtendedUserCreationForm(UserCreationForm):
         super(ExtendedUserCreationForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
+        self.fields['username'].label = 'Choose your new username'
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name')
+        fields = ('first_name', 'last_name', 'email', 'username')
 
     def save(self, commit=True):
         user = super(ExtendedUserCreationForm, self).save(commit=True)

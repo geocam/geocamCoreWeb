@@ -1,31 +1,73 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 
 {% block siteSection %}Login{% endblock %}
 
-{% block globalNav %}
+{% block popupmenu %} <!-- Zero out popup menu -->{% endblock %}
+{% block menubar %}
+<ul id="menu_bar_items">
+    <li class="home" onclick="go_to_view('/');">&nbsp;</li>
+</ul>
 {% endblock %}
 
-{% block subtitle %}
-  Login
+{% block css %}
+    
 {% endblock %}
 
 {% block contents %}
-<h1>Login - GeoCam Share</h1>
 
-{% if form.errors %}
-<p>Invalid username or password. Please try again.</p>
-{% endif %}
+<form name="login" method="POST" action="." onsubmit="return advance_form(this);">
+    <h1 class="geocam_table_title">Login</h1>
 
-<form method="post" action=".">
-<table>
-<tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
-<tr><td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td></tr>
-</table>
-
-<br/>
-<input type="submit" value="login" />
-<input type="hidden" name="next" value="{{ next }}" />
-{% csrf_token %}
+    <table class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+        {% if form.errors %}
+        <tr>
+            <td>
+                <p class="geocam_error_red">Invalid username or password. Please try again.</p>
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>
+                Username
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="username" id="id_username" autocorrect="off" autocapitalize="off" autocomplete="off" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Password
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="password" name="password" id="id_password" autocorrect="off" autocapitalize="off" autocomplete="off" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" id="hidden_submit" name="hidden_submit" value="Login" class="big_awesome_button" />
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                Don't have a GeoCam Account?
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" onclick="go_to_view('/accounts/register/{% if request.GET.next %}?next={{ request.GET.next|safe }}{% endif %}');" class="big_awesome_button" value="Create an account" />
+            </td>
+        </tr>
+    </table>
+        
+    <input type="hidden" name="next" value="{{ next }}" />
+    {% csrf_token %}
 </form>
 
 {% endblock %}

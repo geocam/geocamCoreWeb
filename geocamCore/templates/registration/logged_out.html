@@ -1,4 +1,11 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
+
+{% block popupmenu %} <!-- Zero out popup menu -->{% endblock %}
+{% block menubar %}
+<ul id="menu_bar_items">
+    <li class="home" onclick="go_to_view('/');">&nbsp;</li>
+</ul>
+{% endblock %}
 
 {% block contents %}
 
@@ -6,6 +13,6 @@
 
 <p style="font-size: 1.3em;">Logged out successfully.</p>
 
-<p><a href="{{ settings.SCRIPT_NAME }}">Log in again</a></p>
+<p><a class="big_awesome_button" href="{{ settings.SCRIPT_NAME }}">Log in again</a></p>
 
 {% endblock %}
