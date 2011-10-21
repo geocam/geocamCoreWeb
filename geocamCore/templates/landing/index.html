@@ -33,7 +33,7 @@
     <tr>
         <td>
         <h1 class="geocam_table_title">Registered users - log in</h1>
-        <form id="geocam_login_form" method="post" action="{% password_url geocamCore_login %}&next={% url home %}">
+        <form id="geocam_login_form" method="post" action="{% password_url geocamCore_login %}">
             {% csrf_token %}
             <table>
               {{ authenticationForm.as_table }}

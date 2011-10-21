@@ -171,3 +171,5 @@ DATA_URL = '%sdata/' % SCRIPT_NAME
 
 TMP_DIR = '%stmp/' % DATA_DIR
 TMP_URL = '%stmp/' % DATA_URL
+
+LOGIN_REDIRECT_URL = SCRIPT_NAME + 'geocamAware/'

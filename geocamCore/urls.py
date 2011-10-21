@@ -18,7 +18,7 @@ urlpatterns = patterns(
         name='register'),
 
     # accounts
-    url(r'^accounts/login/$', 'django.contrib.auth.views.login',
+    url(r'^accounts/login/$', views.geocamLogin,
         {'loginRequired': False,  # avoid redirect loop
          },
         name='geocamCore_login'),
