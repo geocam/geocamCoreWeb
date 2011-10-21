@@ -4,20 +4,24 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import *  # pylint: disable=W0401
 
+from geocamCore import views
 from geocamCore import settings
 
 urlpatterns = patterns(
     '',
 
+    url(r'^$', views.index, {'loginRequired': False}),
+
     # accounts
-    (r'^accounts/login/$', 'django.contrib.auth.views.login',
-     {'loginRequired': False,  # avoid redirect loop
-      }),
-    (r'^accounts/logout/$', 'django.contrib.auth.views.logout',
-     # show logout page instead of redirecting to log in again
-     {'loginRequired': False}),
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login',
+        {'loginRequired': False,  # avoid redirect loop
+         },
+        name='geocamCore_login'),
+    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',
+        # show logout page instead of redirecting to log in again
+        {'loginRequired': False}),
 
     )
 

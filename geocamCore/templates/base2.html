@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--<html manifest="/geocam.appcache">-->
+<html>
+    <head>
+        <title>{% block title %}{% block siteSection %}Main{% endblock %} - {% block siteTitle %}GeoCam Share{% endblock %}{% endblock %}</title>
+
+        <!-- Dude this is so... -->
+        <meta name="apple-touch-fullscreen" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="user-scalable=no, width=device-width" />
+
+        <!-- JS -->
+        <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}external/js/jquery.min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}external/js/mootools-classonly.js"></script>
+        <script type="text/javascript" charset="utf-8" src="{{ MEDIA_URL }}geocamCore/js/base.js"></script>
+
+        {% block scripts %}{% endblock %}
+
+        <script type="text/javascript" charset="utf-8">
+            {% block jsSetVars %}
+            {% endblock %}
+
+            {% block jsInit %}
+            {% endblock %}
+        </script>
+
+        <!-- CSS -->
+        <link href="{{ MEDIA_URL }}geocamCore/css/base-tablet.css" rel="stylesheet" type="text/css" media="only screen and (max-device-width: 1024px)" />
+        <link href="{{ MEDIA_URL }}geocamCore/css/base-phone.css"  rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px)" />
+        <link href="{{ MEDIA_URL }}geocamCore/css/base.css" rel="stylesheet" type="text/css" />
+        <link href="{{ MEDIA_URL }}geocamCore/css/button.css" rel="stylesheet" type="text/css" />
+
+        {% block styles %}{% endblock %}
+
+        <!-- CSS for all devices-->
+        <style type="text/css" media="all">
+            {% block css %}
+            {% endblock %}
+        </style>
+
+        <!-- CSS for phones -->
+        <style type="text/css" media="only screen and (max-device-width: 480px)">
+            {% block mobilestyles %}
+            {% endblock %}
+        </style>
+
+        <!-- CSS for tablets -->
+        <style type="text/css" media="only screen and (max-device-width: 1024px)">
+            {% block tablestyles %}
+            {% endblock %}
+        </style>
+    </head>
+    <body class="{% if request.COOKIES.mode %}{{request.COOKIES.mode|safe}}{% else %}daytime{% endif %}">
+        <div id="wrapper">
+
+            <!-- Menu Bar -->
+            <div id="menu_bar_wrapper">
+                <div id="menu_bar">
+                    {% block menubar %}
+                    <ul id="menu_bar_items">
+                        <li class="home" onclick="go_to_view('/home/');">&nbsp;</li>
+                        <li class="nightday" onclick="toggle_night_mode();">&nbsp;</li>
+                        <li class="search" onclick="go_to_view('/search/');">&nbsp;</li>
+                    </ul>
+                    {% endblock %}
+                    <div id="geocam_logo">
+                        <a href="/home">GeoCam</a>
+                    </div>
+                </div>
+            </div>
+            <!-- End Menu -->
+
+            <!-- Content -->
+            <div id="content_wrapper">
+                <div id="content">
+                    {% block contents %}{% endblock %}
+                </div>
+            </div>
+            <!-- End Content -->
+
+            <!-- Pop Up Menu -->
+            {% block popupmenu %}
+            <div id="pop_up_menu_wrapper">
+                <div id="pop_up_menu">
+                    {% if pop_up_menu_items or account_widget %}
+
+                    <div id="pop_up_menu_control" onclick="toggle_menu();">
+                        <a href="javascript:void();"><span id="direction">Open Menu</span></a>
+                    </div>
+                    <div id="pop_up_menu_list">
+                        {% if pop_up_menu_items %}
+                            {{ pop_up_menu_items|safe }}
+                        {% endif %}
+                        {% if account_widget %}
+                            {{ account_widget|safe }}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endblock %}
+            <!-- End Pop Up Menu -->
+        </div>
+    </body>
+</html>

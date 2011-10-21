@@ -1,0 +1,46 @@
+{% extends "base2.html" %}
+
+{% block popupmenu %}
+
+{% endblock %}
+
+{% block menubar %}
+{% endblock %}
+
+{% block contents %}
+<h1 class="geocam_table_title">Welcome</h1>
+
+<table class="geocam_table" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px;">
+    <tr><td>
+        GeoCam Share helps you share map data. You can take geotagged
+        photos with your cell phone and they will show up on the map.
+    </td></tr>
+
+    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td>
+            <a href="/accounts/register/" class="big_awesome_button">Sign Up to Start Sharing Map Data (Free!)</a>
+        </td>
+    </tr>
+    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td>
+            <a href="/geocamAware/" class="big_awesome_button">Enter as Guest (View Data Only)</a>
+        </td>
+    </tr>
+    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td>
+        <h1 class="geocam_table_title">Registered Users - Log In</h1>
+        <form id="geocam_login_form" method="post" action="{% url geocamCore_login %}?next={% url home %}">
+            {% csrf_token %}
+            <table>
+              {{ authenticationForm.as_table }}
+            </table>
+            <input type="submit" style="display:none"/>
+            <a href="#" class="big_awesome_button" onclick="$('#geocam_login_form').submit(); return false;">Login</a>
+        </form>
+        </td>
+    </tr>
+</table>
+{% endblock %}

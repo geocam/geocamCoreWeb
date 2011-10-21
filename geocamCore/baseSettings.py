@@ -100,6 +100,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'geocamUtil.middleware.SecurityMiddleware',
     'geocamUtil.middleware.LogErrorsMiddleware',

@@ -1,0 +1,125 @@
+{% extends "base2.html" %}
+
+{% block css %}
+
+table#nav_table {
+    text-align:center;
+    height:100%;
+}
+
+table#nav_table td {
+    width:33%;
+    cursor:pointer;
+}
+
+.home_icon {
+    min-height:95px;
+    padding:0px 0px 5px 0px;
+}
+
+body.daytime .home_map {
+    background:url('/media/geocamCore/img/home/map_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime .home_map {
+    background:url('/media/geocamCore/img/home/map_night.png') no-repeat 50% 50%;
+}
+
+body.daytime .home_list {
+    background:url('/media/geocamCore/img/home/list_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime .home_list {
+    background:url('/media/geocamCore/img/home/list_night.png') no-repeat 50% 50%;
+}
+
+body.daytime .home_gallery {
+    background:url('/media/geocamCore/img/home/gallery_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime .home_gallery {
+    background:url('/media/geocamCore/img/home/gallery_night.png') no-repeat 50% 50%;
+}
+
+body.daytime .home_photo {
+    background:url('/media/geocamCore/img/home/photo_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime .home_photo {
+    background:url('/media/geocamCore/img/home/photo_night.png') no-repeat 50% 50%;
+}
+
+body.daytime .home_talk {
+    background:url('/media/geocamCore/img/home/talk_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime .home_talk {
+    background:url('/media/geocamCore/img/home/talk_night.png') no-repeat 50% 50%;
+}
+
+body.daytime .home_report {
+    background:url('/media/geocamCore/img/home/report_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime .home_report {
+    background:url('/media/geocamCore/img/home/report_night.png') no-repeat 50% 50%;
+}
+
+body.daytime .home_help {
+    background:url('/media/geocamCore/img/home/help_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime .home_help {
+    background:url('/media/geocamCore/img/home/help_night.png') no-repeat 50% 50%;
+}
+
+body.daytime .home_search {
+    background:url('/media/geocamCore/img/home/search_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime .home_search {
+    background:url('/media/geocamCore/img/home/search_night.png') no-repeat 50% 50%;
+}
+
+body.daytime .home_management {
+    background:url('/media/geocamCore/img/home/management_day.png') no-repeat 50% 50%;
+}
+
+body.nighttime .home_management {
+    background:url('/media/geocamCore/img/home/management_night.png') no-repeat 50% 50%;
+}
+
+{% endblock %}
+
+{% block contents %}
+<table id="nav_table" class="geocam_table" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td onclick="go_to_view('/geocamAware/map/');">
+            <div class="home_map home_icon">&nbsp;</div>
+            <a href="javascript:void(0);">Map</a>
+        </td>
+        <td onclick="go_to_view('/geocamAware/list');">
+            <div class="home_list home_icon">&nbsp;</div>
+            <a href="javascript:void(0);">List</a>
+        </td>
+        <td onclick="go_to_view('/geocamAware/gallery/');">
+            <div class="home_gallery home_icon">&nbsp;</div>
+            <a href="javascript:void(0);">Gallery</a>
+        </td>
+    </tr>
+    <tr>
+        <td onclick="go_to_view('/help/');">
+            <div class="home_help home_icon">&nbsp;</div>
+            <a href="javascript:void(0);">Help</a>
+        </td>
+        <td onclick="go_to_view('/search/');">
+            <div class="home_search home_icon">&nbsp;</div>
+            <a href="javascript:void(0);">Search</a>
+        </td>
+        <td onclick="go_to_view('/accounts/manage/');">
+            <div class="home_management home_icon">&nbsp;</div>
+            <a href="javascript:void(0);">Management</a>
+        </td>
+    </tr>
+</table>
+{% endblock %}
