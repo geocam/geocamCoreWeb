@@ -11,27 +11,26 @@ from django.core.urlresolvers import reverse
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
-from django.views.decorators.csrf import csrf_exempt
 import django.contrib.auth.views
 
 from geocamCore.forms import ExtendedUserCreationForm
 from geocamUtil.auth import getAccountWidget
 
 
-def index(request):
+def welcome(request):
     if not request.user.is_authenticated():
-        authenticationForm = AuthenticationForm()
-        return render_to_response('landing/index.html',
-                                  {'account_widget': getAccountWidget(request),
-                                   'authenticationForm': authenticationForm},
-                                  context_instance=RequestContext(request))
+        if request.method == 'POST':
+            return django.contrib.auth.views.login(request)
+        else:
+            authenticationForm = AuthenticationForm()
+            return render_to_response('landing/index.html',
+                                      {'account_widget': getAccountWidget(request),
+                                       'authenticationForm': authenticationForm},
+                                      context_instance=RequestContext(request))
     else:
         return HttpResponseRedirect(reverse('home'))
 
 
-# note: no need to protect from CSRF because holding user credentials does not
-# change the effect of posting to the new user registration url.
-@csrf_exempt
 def register(request):
     if request.method == 'POST':
 
@@ -66,10 +65,3 @@ def register(request):
                                  'user_form': user_form,
                                 },
                                 context_instance=RequestContext(request))
-
-
-# note: no need to protect from CSRF because holding user credentials does not
-# change the effect of posting to the login url.
-@csrf_exempt
-def geocamLogin(request):
-    return django.contrib.auth.views.login(request)

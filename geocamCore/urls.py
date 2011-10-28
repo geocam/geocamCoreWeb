@@ -7,18 +7,20 @@
 from django.conf.urls.defaults import *  # pylint: disable=W0401
 
 from geocamCore import views
+from geocamUtil import settings as utilSettings
 from geocamCore import settings
 
 urlpatterns = patterns(
     '',
 
-    url(r'^$', views.index, {'loginRequired': False}),
+    url(r'^$', views.welcome),
 
-    url(r'^accounts/register/$', views.register, {'loginRequired': False},
+    url(r'^accounts/register/$', views.register,
+        {'loginRequired': False},
         name='register'),
 
     # accounts
-    url(r'^accounts/login/$', views.geocamLogin,
+    url(r'^accounts/login/$', views.welcome, # 'django.contrib.auth.views.login',
         {'loginRequired': False,  # avoid redirect loop
          },
         name='geocamCore_login'),

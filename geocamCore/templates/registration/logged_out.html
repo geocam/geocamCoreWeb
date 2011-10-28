@@ -11,8 +11,10 @@
 
 <h1>{{ settings.SITE_TITLE }}</h1>
 
-<p style="font-size: 1.3em;">Logged out successfully.</p>
+<div style="max-width: 600px;">
+  <p style="font-size: 1.3em;">Logged out successfully.</p>
 
-<p><a class="big_awesome_button" href="{{ settings.SCRIPT_NAME }}">Log in again</a></p>
+  <p><a class="big_awesome_button" href="{{ settings.SCRIPT_NAME }}">Log in again</a></p>
+</div>
 
 {% endblock %}
