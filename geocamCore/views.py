@@ -41,7 +41,7 @@ def welcome(request):
                                   {'account_widget': getAccountWidget(request),
                                    'authenticationForm': authenticationForm,
                                    'nextParam': nextParam,
-                                   'homeUrl': homeUrl{,
+                                   'homeUrl': homeUrl},
                                   context_instance=RequestContext(request))
     else:
         return HttpResponseRedirect(reverse('home'))

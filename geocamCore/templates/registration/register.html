@@ -10,6 +10,11 @@
 {% block contents %}
 <h1 class="geocam_table_title">Create an account</h1>
 
+<div style="max-width: 600px;">
+<blockquote>
+  {% include "registration/terms.html" %}
+</blockquote>
+
 <form name="register" method="POST" action=".">
     <table class="geocam_table" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px;">
         {% for field in user_form %}
@@ -36,5 +41,6 @@
     <input type="hidden" name="next" value="{% if request.REQUEST.next %}{{ request.REQUEST.next|safe }}{% else %}{% url home %}{% endif %}">
     {% csrf_token %}
 </form>
+</div>
 
 {% endblock %}

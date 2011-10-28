@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
-    <title>{% block title %}{% block siteSection %}Main{% endblock %} - {% block siteTitle %}GeoCam Share{% endblock %}{% endblock %}</title>
+    <title>{% block title %}{% block siteSection %}Main{% endblock %} - {% block siteTitle %}{{ settings.GEOCAM_CORE_SITE_TITLE }}{% endblock %}{% endblock %}</title>
     <link href="{{ MEDIA_URL }}geocamCore/css/share.css" rel="stylesheet" type="text/css"/>
     {% block cssExtras %}
     {% endblock %}

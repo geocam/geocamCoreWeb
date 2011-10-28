@@ -342,3 +342,8 @@ table.list_table th {
 table.list_table td {
     padding:4px;
 }
+
+
+.geocamTermsTitle {
+    font-style: italic;
+}

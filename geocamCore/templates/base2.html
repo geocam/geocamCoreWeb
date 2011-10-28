@@ -2,7 +2,7 @@
 <!--<html manifest="/geocam.appcache">-->
 <html>
     <head>
-        <title>{% block title %}{% block siteSection %}Main{% endblock %} - {% block siteTitle %}GeoCam Share{% endblock %}{% endblock %}</title>
+        <title>{% block title %}{% block siteSection %}Main{% endblock %} - {% block siteTitle %}{{ settings.GEOCAM_CORE_SITE_TITLE }}{% endblock %}{% endblock %}</title>
 
         <!-- Dude this is so... -->
         <meta name="apple-touch-fullscreen" content="yes" />
@@ -64,7 +64,7 @@
                     </ul>
                     {% endblock %}
                     <div id="geocam_logo">
-                        <a href="/home">GeoCam</a>
+                        <a href="/home">{{ settings.GEOCAM_CORE_SITE_TITLE }}</a>
                     </div>
                 </div>
             </div>

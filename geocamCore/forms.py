@@ -88,6 +88,8 @@ class ProfileForm(ModelForm):
 
 
 class ExtendedUserCreationForm(UserCreationForm):
+    accept_terms_of_service = forms.BooleanField(label='I have read and understood the terms of service')
+    
     def __init__(self, *args, **kwargs):
         super(ExtendedUserCreationForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].required = True
@@ -96,7 +98,7 @@ class ExtendedUserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'username')
+        fields = ('accept_terms_of_service', 'first_name', 'last_name', 'email', 'username')
 
     def save(self, commit=True):
         user = super(ExtendedUserCreationForm, self).save(commit=True)
