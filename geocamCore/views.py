@@ -4,10 +4,13 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
+import re
+
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.utils.http import urlquote
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
@@ -21,12 +24,25 @@ def welcome(request):
     if not request.user.is_authenticated():
         if request.method == 'POST':
             return django.contrib.auth.views.login(request)
+
+        nextUrl = request.GET.get('next', None)
+        if nextUrl:
+            nextParam = '?next=' + urlquote(nextUrl)
         else:
-            authenticationForm = AuthenticationForm()
-            return render_to_response('landing/index.html',
-                                      {'account_widget': getAccountWidget(request),
-                                       'authenticationForm': authenticationForm},
-                                      context_instance=RequestContext(request))
+            nextParam = ''
+        redirectToHttp = 'protocol=http' in nextUrl
+        
+        homeUrl = reverse('home')
+        if redirectToHttp:
+            homeUrl = re.sub('^https:', 'http:', request.build_absolute_uri(homeUrl))
+
+        authenticationForm = AuthenticationForm()
+        return render_to_response('landing/index.html',
+                                  {'account_widget': getAccountWidget(request),
+                                   'authenticationForm': authenticationForm,
+                                   'nextParam': nextParam,
+                                   'homeUrl': homeUrl{,
+                                  context_instance=RequestContext(request))
     else:
         return HttpResponseRedirect(reverse('home'))
 

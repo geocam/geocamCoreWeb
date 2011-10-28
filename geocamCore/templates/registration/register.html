@@ -33,7 +33,7 @@
             </td>
         </tr>
     </table>
-    <input type="hidden" name="next" value="{% if request.GET.next %}{{ request.GET.next|safe }}{% else %}{% url home %}{% endif %}">
+    <input type="hidden" name="next" value="{% if request.REQUEST.next %}{{ request.REQUEST.next|safe }}{% else %}{% url home %}{% endif %}">
     {% csrf_token %}
 </form>
 
