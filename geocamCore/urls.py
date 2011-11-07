@@ -28,6 +28,10 @@ urlpatterns = patterns(
         # show logout page instead of redirecting to log in again
         {'loginRequired': False}),
 
+    url(r'^m/checkLogin/$', views.checkLogin,
+        {'challenge': 'basic'},
+        name='geocamCore_checkLogin'),
+
     )
 
 if settings.USE_STATIC_SERVE:

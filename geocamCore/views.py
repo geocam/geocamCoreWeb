@@ -7,7 +7,7 @@
 import re
 
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.utils.http import urlquote
@@ -81,3 +81,7 @@ def register(request):
                                  'user_form': user_form,
                                 },
                                 context_instance=RequestContext(request))
+
+
+def checkLogin(request):
+    return HttpResponse('ok')
