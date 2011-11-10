@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerEr
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.utils.http import urlquote
+from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
@@ -48,6 +49,7 @@ def welcome(request):
         return HttpResponseRedirect(reverse('home'))
 
 
+@csrf_exempt
 def register(request, useJson=False):
     if request.method == 'POST':
 
