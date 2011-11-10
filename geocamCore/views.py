@@ -7,7 +7,7 @@
 import re
 
 from django.shortcuts import render_to_response
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.utils.http import urlquote
@@ -18,6 +18,7 @@ import django.contrib.auth.views
 
 from geocamCore.forms import ExtendedUserCreationForm
 from geocamUtil.auth import getAccountWidget
+from geocamUtil import anyjson as json
 
 
 def welcome(request):
@@ -47,7 +48,7 @@ def welcome(request):
         return HttpResponseRedirect(reverse('home'))
 
 
-def register(request):
+def register(request, useJson=False):
     if request.method == 'POST':
 
         # Get Account Information from User Creation Form
@@ -56,6 +57,13 @@ def register(request):
 
         if user_form.is_valid():
             user = user_form.save()
+
+            if useJson:
+                result = {"message": "created user %s" % user.username}
+                if 'token' in request.POST:
+                    result['token'] = request.POST['token']
+                return HttpResponse(json.dumps({"result": result}),
+                                    mimetype='application/json')
 
             # profile_form = ProfileForm(request.POST, instance=user.get_profile())
             # profile_form.save()
@@ -70,6 +78,13 @@ def register(request):
                     return HttpResponseRedirect(nextUrl)
 
             return HttpResponseRedirect(reverse('geocamCore_login') + '?next=%s' % nextUrl)
+        else:
+            if useJson:
+                errInfo = {'code': -32099,
+                           'message': 'invalid value in form field',
+                           'data': user_form._get_errors()}
+                return HttpResponseServerError(json.dumps({'error': errInfo}),
+                                               mimetype='application/json')
 
     else:
         # profile_form = ProfileForm()

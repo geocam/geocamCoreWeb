@@ -32,6 +32,10 @@ urlpatterns = patterns(
         {'challenge': 'basic'},
         name='geocamCore_checkLogin'),
 
+    url(r'^m/register/$', views.register,
+        {'loginRequired': False, 'useJson': True},
+        name='geocamCore_register'),
+
     )
 
 if settings.USE_STATIC_SERVE:
