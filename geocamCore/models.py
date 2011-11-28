@@ -259,11 +259,11 @@ class Sensor(models.Model):
 
 
 class Feature(models.Model):
-    folders = models.ManyToManyField(Folder)
+    folders = models.ManyToManyField(Folder, related_name='%(app_label)s_%(class)s_set')
     name = models.CharField(max_length=80, blank=True, default='')
     author = models.ForeignKey(User, null=True, related_name='%(app_label)s_%(class)s_authoredSet',
                                help_text='The user who collected the data (when you upload data, Share tags you as the author)')
-    sensor = models.ForeignKey(Sensor, blank=True, null=True)
+    sensor = models.ForeignKey(Sensor, blank=True, null=True, related_name='%(app_label)s_%(class)s_set')
     isAerial = models.BooleanField(default=False, blank=True, verbose_name='aerial data', help_text="True for aerial data. Generally for non-aerial data we snap to terrain in 3D visualizations so that GPS errors can't cause features to be rendered underground.")
     notes = models.TextField(blank=True)
     tags = TagField(blank=True)
