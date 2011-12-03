@@ -216,25 +216,29 @@ class GroupInvite(models.Model):
     redeemedTime = models.DateTimeField(blank=True, null=True, help_text='Date and time that this invite was succesfully redeemed')
 
 
-class UserProfile(models.Model):
+class AbstractUserProfile(models.Model):
     """
     Adds some extended fields to the django built-in User type.
     """
-    user = models.OneToOneField(User, help_text='Reference to corresponding User object of built-in Django authentication system.')
+    user = models.OneToOneField(User, help_text='Reference to corresponding User object of built-in Django authentication system.', related_name='%(app_label)s_%(class)s')
     displayName = models.CharField(max_length=40, blank=True,
                                    help_text="The 'uploaded by' name that will appear next to data you upload.  Defaults to 'F. Last', but if other members of your unit use your account you might want to show your unit name instead.")
     homeOrganization = models.CharField(max_length=64, blank=True, help_text="The home organization you usually work for.")
     homeJobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title in your home organization.")
     contactInfo = models.CharField(max_length=128, blank=True, help_text="Your contact info in your home organization.")
-    operations = models.ManyToManyField(Operation, through=Assignment)
     uuid = UuidField()
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
     class Meta:
         ordering = ['user']
+        abstract = True
 
     def __unicode__(self):
         return u'<User %s "%s %s">' % (self.user.username, self.user.first_name, self.user.last_name)
+
+
+class UserProfile(AbstractUserProfile):
+    pass
 
 
 class Sensor(models.Model):
