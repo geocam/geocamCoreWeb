@@ -263,7 +263,7 @@ class Sensor(models.Model):
 
 
 class Feature(models.Model):
-    folders = models.ManyToManyField(Folder, related_name='%(app_label)s_%(class)s_set')
+    folders = models.ManyToManyField(Folder, related_name='%(app_label)s_%(class)s_set', blank=True)
     name = models.CharField(max_length=80, blank=True, default='')
     author = models.ForeignKey(User, null=True, related_name='%(app_label)s_%(class)s_authoredSet',
                                help_text='The user who collected the data (when you upload data, Share tags you as the author)')
