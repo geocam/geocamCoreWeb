@@ -54,9 +54,10 @@
         <tr>
             <td>&nbsp;</td>
         </tr>
+{% if not settings.GEOCAM_CORE_DISABLE_ACCOUNT_CREATION %}
         <tr>
             <td>
-                Don't have a GeoCam Account?
+                Don't have a {{ settings.SITE_NAME }} Account?
             </td>
         </tr>
         <tr>
@@ -64,6 +65,7 @@
                 <input type="button" onclick="go_to_view('/accounts/register/{% if request.GET.next %}?next={{ request.GET.next|safe }}{% endif %}');" class="big_awesome_button" value="Create an account" />
             </td>
         </tr>
+{% endif %}
     </table>
         
     <input type="hidden" name="next" value="{{ next }}" />
