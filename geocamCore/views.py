@@ -32,7 +32,7 @@ def welcome(request):
             nextParam = '?next=' + urlquote(nextUrl)
         else:
             nextParam = ''
-        redirectToHttp = 'protocol=http' in nextUrl
+        redirectToHttp = nextUrl is not None and 'protocol=http' in nextUrl
         
         homeUrl = reverse('home')
         if redirectToHttp:
