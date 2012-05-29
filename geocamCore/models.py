@@ -20,7 +20,11 @@ from geocamFolder.models import Folder
 from geocamUtil.models.ExtrasField import ExtrasField
 from geocamUtil.models.UuidField import UuidField
 from geocamUtil.models.managers import AbstractModelManager, FinalModelManager
-from geocamUtil.icons import getIconSize, getIconUrl
+try:
+    from geocamUtil.icons import getIconSize, getIconUrl
+except ImportError:
+    # PIL is not available on app engine; for some apps we can do without
+    pass
 
 from geocamCore import settings
 
