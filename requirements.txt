@@ -11,4 +11,4 @@ Django
 PIL
 pytz
 
--e svn+http://django-tagging.googlecode.com/svn/trunk/#egg=tagging
+django-tagging
