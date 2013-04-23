@@ -132,27 +132,27 @@ body.nighttime ul#menu_bar_items li a,  body.nightime ul#menu_bar_items li a:vis
 }
 
 body.daytime ul#menu_bar_items li.home {
-    background:url('/media/geocamCore/img/menu/home_day.png') no-repeat 50% 50%;
+    background:url('/static/geocamCore/img/menu/home_day.png') no-repeat 50% 50%;
 }
 
 body.nighttime ul#menu_bar_items li.home {
-    background:url('/media/geocamCore/img/menu/home_night.png') no-repeat 50% 50%;
+    background:url('/static/geocamCore/img/menu/home_night.png') no-repeat 50% 50%;
 }
 
 body.daytime ul#menu_bar_items li.nightday {
-    background:url('/media/geocamCore/img/menu/moon_day.png') no-repeat 50% 50%;
+    background:url('/static/geocamCore/img/menu/moon_day.png') no-repeat 50% 50%;
 }
 
 body.nighttime ul#menu_bar_items li.nightday {
-    background:url('/media/geocamCore/img/menu/sun_night.png') no-repeat 50% 50%;
+    background:url('/static/geocamCore/img/menu/sun_night.png') no-repeat 50% 50%;
 }
 
 body.daytime ul#menu_bar_items li.search {
-    background:url('/media/geocamCore/img/menu/mag_day.png') no-repeat 50% 50%;
+    background:url('/static/geocamCore/img/menu/mag_day.png') no-repeat 50% 50%;
 }
 
 body.nighttime ul#menu_bar_items li.search {
-    background:url('/media/geocamCore/img/menu/mag_night.png') no-repeat 50% 50%;
+    background:url('/static/geocamCore/img/menu/mag_night.png') no-repeat 50% 50%;
 }
 
 ul#menu_bar_items li {
