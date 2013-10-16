@@ -28,8 +28,7 @@ except ImportError:
 
 from geocamCore import settings
 
-# disable bogus pylint warnings about missing members in hashlib
-# pylint: disable=E1101
+# pylint: disable=E1101,C1001
 
 TOP_TIME_ZONES = ['US/Pacific', 'US/Eastern', 'US/Central', 'US/Mountain']
 TIME_ZONES = TOP_TIME_ZONES + [tz for tz in pytz.common_timezones if tz not in TOP_TIME_ZONES]
@@ -164,11 +163,11 @@ class GroupProfile(models.Model):
     extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
     def password_required(self):
-        return (self.password == None)
+        return (self.password is None)
 
     def set_password(self, raw_password):
         # Make sure the password field isn't set to none
-        if raw_password != None:
+        if raw_password is not None:
             import hashlib
             import random
 
@@ -182,7 +181,7 @@ class GroupProfile(models.Model):
 
     def authenticate(self, user_password):
         # Make sure the password field isn't set to none
-        if self.password != None:
+        if self.password is not None:
             import hashlib
 
             # Get the parts of the group password
@@ -332,7 +331,7 @@ class Feature(models.Model):
         return '%s %d %s %s %s' % (self.__class__.__name__, self.id, self.name or '[untitled]', self.author.username, self.uuid)
 
     def getDirSuffix(self, version=None):
-        if version == None:
+        if version is None:
             version = self.version
         idStr = str(self.id) + 'p'
         idList = [idStr[i:(i + 2)] for i in xrange(0, len(idStr), 2)]
@@ -425,7 +424,7 @@ class PointFeature(Feature):
         ordering = ['-timestamp']
 
     def save(self, **kwargs):
-        if self.timestamp == None:
+        if self.timestamp is None:
             self.timestamp = datetime.datetime.now()
         super(PointFeature, self).save(**kwargs)
 
@@ -440,9 +439,9 @@ class PointFeature(Feature):
         return ''
 
     def getKml(self, request=None):
-        if self.longitude == None:
+        if self.longitude is None:
             return ''
-        if self.yaw == None:
+        if self.yaw is None:
             headingStr = ''
             relIconUrl = getIconUrl(self.icon)
         else:
@@ -499,7 +498,7 @@ class ExtentFeature(Feature):
     objects = AbstractModelManager(parentModel=Feature)
 
     def save(self, **kwargs):
-        if self.minTime == None:
+        if self.minTime is None:
             timestamp = datetime.datetime.now()
             self.minTime = timestamp
             self.maxTime = timestamp

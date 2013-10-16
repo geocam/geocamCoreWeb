@@ -20,6 +20,8 @@ from geocamCore.models import GroupProfile
 #from geocamCore.models import GroupInvite
 from geocamFolder.models import Folder, Actions
 
+# pylint: disable=C1001,R0924
+
 logger = logging.getLogger(__name__)
 
 
