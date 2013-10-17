@@ -4,14 +4,16 @@
 # All Rights Reserved.
 # __END_LICENSE__
 
-from django.conf.urls import *
+from django.conf.urls import patterns, include
 from django.conf import settings
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
+
     # Example:
     # (r'^example/', include('example.foo.urls')),
 
@@ -24,9 +26,11 @@ urlpatterns = patterns('',
 
 )
 
-urlpatterns = urlpatterns + patterns('',
+urlpatterns = urlpatterns + patterns(
+    '',
+
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': settings.MEDIA_ROOT}),
-#    (r'^data/(?P<path>.*)$', 'django.views.static.serve',
-#        {'document_root': settings.DATA_ROOT}),
-    )
+    # (r'^data/(?P<path>.*)$', 'django.views.static.serve',
+    #  {'document_root': settings.DATA_ROOT}),
+)
