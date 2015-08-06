@@ -26,7 +26,7 @@ except ImportError:
     # PIL is not available on app engine; for some apps we can do without
     pass
 
-from geocamCore import settings
+from django.conf import settings
 
 # pylint: disable=E1101,C1001
 
