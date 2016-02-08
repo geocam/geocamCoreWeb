@@ -17,7 +17,7 @@ from django.db.models.signals import post_save
 import tagging
 
 from geocamFolder.models import Folder
-from geocamUtil.models.ExtrasField import ExtrasField
+from geocamUtil.models.ExtrasDotField import ExtrasDotField
 from geocamUtil.models.UuidField import UuidField
 from geocamUtil.models.managers import AbstractModelManager, FinalModelManager
 try:
@@ -108,7 +108,7 @@ class AbstractOperation(models.Model):
     notes = models.TextField(blank=True)
     tags = TagField(blank=True)
     uuid = UuidField()
-    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+    extras = ExtrasDotField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
     objects = AbstractModelManager(parentModel=None)
 
     class Meta:
@@ -129,7 +129,7 @@ class Assignment(models.Model):
     jobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title for this operation.")
     contactInfo = models.CharField(max_length=128, blank=True, help_text="Your contact info for this operation. Cell phone number is most important.")
     uuid = UuidField()
-    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+    extras = ExtrasDotField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
 
 class Context(models.Model):
@@ -149,7 +149,7 @@ class Context(models.Model):
     layerConfigUrl = models.CharField(max_length=256,
                                       help_text='URL pointing to a JSON config file specifying what layers to show')
     uuid = UuidField()
-    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+    extras = ExtrasDotField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
 
 class GroupProfile(models.Model):
@@ -160,7 +160,7 @@ class GroupProfile(models.Model):
     password = models.CharField(max_length=128, blank=True, null=True)
 
     uuid = UuidField()
-    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+    extras = ExtrasDotField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
     def password_required(self):
         return (self.password is None)
@@ -230,7 +230,7 @@ class AbstractUserProfile(models.Model):
     homeJobTitle = models.CharField(max_length=64, blank=True, help_text="Your job title in your home organization.")
     contactInfo = models.CharField(max_length=128, blank=True, help_text="Your contact info in your home organization.")
     uuid = UuidField()
-    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+    extras = ExtrasDotField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
     class Meta:
         ordering = ['user']
@@ -259,7 +259,7 @@ class Sensor(models.Model):
     notes = models.TextField(blank=True)
     tags = TagField(blank=True)
     uuid = UuidField()
-    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+    extras = ExtrasDotField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
     def __unicode__(self):
         return self.name
@@ -287,7 +287,7 @@ class Feature(models.Model):
     mtime = models.DateTimeField(null=True, blank=True)
 
     uuid = UuidField()
-    extras = ExtrasField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
+    extras = ExtrasDotField(help_text="A place to add extra fields if we need them but for some reason can't modify the table schema.  Expressed as a JSON-encoded dict.")
 
     objects = AbstractModelManager(parentModel=None)
     viewerExtension = None  # override in derived classes
